@@ -9,20 +9,24 @@
         <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
             <t t-call="portal.portal_docs_entry">
                 <t t-set="icon" t-value="'/resellerclub_integration/static/description/icon.png'"/>
+                <t t-set="title">My Services</t>
+                <t t-set="url" t-value="'/my/services'"/>
+                <t t-set="text">Dashboard for all services</t>
+                <t t-set="placeholder_count" t-value="'domain_count'"/>
+            </t>
+            <t t-call="portal.portal_docs_entry">
                 <t t-set="title">Domains</t>
                 <t t-set="url" t-value="'/my/domains'"/>
                 <t t-set="text">Manage your domain registrations</t>
                 <t t-set="placeholder_count" t-value="'domain_count'"/>
             </t>
             <t t-call="portal.portal_docs_entry">
-                <t t-set="icon" t-value="'/resellerclub_integration/static/description/hosting.png'"/>
                 <t t-set="title">Hosting</t>
                 <t t-set="url" t-value="'/my/hosting'"/>
                 <t t-set="text">Manage your hosting services</t>
                 <t t-set="placeholder_count" t-value="'hosting_count'"/>
             </t>
             <t t-call="portal.portal_docs_entry">
-                <t t-set="icon" t-value="'/resellerclub_integration/static/description/ssl.png'"/>
                 <t t-set="title">SSL Certificates</t>
                 <t t-set="url" t-value="'/my/ssl'"/>
                 <t t-set="text">Manage your SSL certificates</t>
@@ -31,7 +35,128 @@
         </xpath>
     </template>
 
-    <!-- Domains List -->
+    <!-- ======================================= -->
+    <!-- SERVICES DASHBOARD -->
+    <!-- ======================================= -->
+
+    <template id="portal_services_dashboard" name="Services Dashboard">
+        <t t-call="portal.portal_layout">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h2>My Services</h2>
+                </div>
+            </div>
+
+            <!-- Expiring Services Alert -->
+            <t t-if="total_expiring > 0">
+                <div class="alert alert-warning mb-4">
+                    <i class="fa fa-exclamation-triangle me-2"/>
+                    <strong>Attention:</strong> You have <t t-esc="total_expiring"/> service(s) expiring within 30 days.
+                    <a href="#expiring-section" class="alert-link">Review now</a>
+                </div>
+            </t>
+
+            <!-- Service Stats -->
+            <div class="row mb-4">
+                <div class="col-md-4 mb-3">
+                    <div class="card text-center h-100">
+                        <div class="card-body">
+                            <i class="fa fa-globe fa-3x text-primary mb-3"/>
+                            <h3 class="card-title" t-esc="domain_count"/>
+                            <p class="card-text text-muted">Domains</p>
+                            <a href="/my/domains" class="btn btn-outline-primary">Manage</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card text-center h-100">
+                        <div class="card-body">
+                            <i class="fa fa-server fa-3x text-info mb-3"/>
+                            <h3 class="card-title" t-esc="hosting_count"/>
+                            <p class="card-text text-muted">Hosting Services</p>
+                            <a href="/my/hosting" class="btn btn-outline-info">Manage</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card text-center h-100">
+                        <div class="card-body">
+                            <i class="fa fa-lock fa-3x text-success mb-3"/>
+                            <h3 class="card-title" t-esc="ssl_count"/>
+                            <p class="card-text text-muted">SSL Certificates</p>
+                            <a href="/my/ssl" class="btn btn-outline-success">Manage</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Expiring Services Section -->
+            <div id="expiring-section" t-if="total_expiring > 0" class="mb-4">
+                <h4 class="text-danger"><i class="fa fa-clock-o me-2"/>Expiring Soon</h4>
+                <div class="card">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-warning">
+                                <tr>
+                                    <th>Service</th>
+                                    <th>Type</th>
+                                    <th>Expires</th>
+                                    <th>Days Left</th>
+                                    <th class="text-end">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="expiring_domains" t-as="d">
+                                    <tr>
+                                        <td><a t-attf-href="/my/domains/#{d.id}" t-esc="d.domain_name"/></td>
+                                        <td>Domain</td>
+                                        <td t-field="d.expiration_date"/>
+                                        <td><span class="badge text-bg-warning" t-esc="d.days_until_expiry"/> days</td>
+                                        <td class="text-end"><a t-attf-href="/my/domains/#{d.id}/renew" class="btn btn-sm btn-warning">Renew</a></td>
+                                    </tr>
+                                </t>
+                                <t t-foreach="expiring_hostings" t-as="h">
+                                    <tr>
+                                        <td><a t-attf-href="/my/hosting/#{h.id}" t-esc="h.domain_name"/></td>
+                                        <td>Hosting</td>
+                                        <td t-field="h.expiration_date"/>
+                                        <td><span class="badge text-bg-warning" t-esc="h.days_until_expiry"/> days</td>
+                                        <td class="text-end"><a t-attf-href="/my/hosting/#{h.id}/renew" class="btn btn-sm btn-warning">Renew</a></td>
+                                    </tr>
+                                </t>
+                                <t t-foreach="expiring_ssls" t-as="s">
+                                    <tr>
+                                        <td><a t-attf-href="/my/ssl/#{s.id}" t-esc="s.domain_name"/></td>
+                                        <td>SSL</td>
+                                        <td t-field="s.expiration_date"/>
+                                        <td><span class="badge text-bg-warning" t-esc="s.days_until_expiry"/> days</td>
+                                        <td class="text-end"><a t-attf-href="/my/ssl/#{s.id}/renew" class="btn btn-sm btn-warning">Renew</a></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="row">
+                <div class="col-12">
+                    <h4>Quick Actions</h4>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="/domains" class="btn btn-primary"><i class="fa fa-search me-2"/>Search Domains</a>
+                        <a href="/hosting" class="btn btn-info"><i class="fa fa-plus me-2"/>New Hosting</a>
+                        <a href="/ssl-certificates" class="btn btn-success"><i class="fa fa-shield me-2"/>New SSL</a>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- ======================================= -->
+    <!-- DOMAINS PORTAL -->
+    <!-- ======================================= -->
+
     <template id="portal_my_domains" name="My Domains">
         <t t-call="portal.portal_layout">
             <t t-set="breadcrumbs_searchbar" t-value="True"/>
@@ -40,9 +165,14 @@
                 <t t-set="title">Domains</t>
             </t>
 
+            <div class="mb-3">
+                <a href="/domains" class="btn btn-primary"><i class="fa fa-plus me-2"/>Register New Domain</a>
+                <a href="/domains/transfer" class="btn btn-outline-secondary"><i class="fa fa-exchange me-2"/>Transfer Domain</a>
+            </div>
+
             <t t-if="not domains">
                 <div class="alert alert-info" role="alert">
-                    You don't have any domains yet.
+                    You don't have any domains yet. <a href="/domains">Register your first domain!</a>
                 </div>
             </t>
 
@@ -56,6 +186,7 @@
                                     <th>Status</th>
                                     <th>Expiration</th>
                                     <th>Days Left</th>
+                                    <th>Auto-Renew</th>
                                     <th class="text-end">Actions</th>
                                 </tr>
                             </thead>
@@ -74,14 +205,19 @@
                                         </td>
                                         <td t-field="domain.expiration_date"/>
                                         <td>
-                                            <span t-attf-class="badge #{domain.expiry_status == 'ok' and 'text-bg-success' or domain.expiry_status == 'warning' and 'text-bg-warning' or 'text-bg-danger'}">
+                                            <span t-attf-class="badge #{domain.days_until_expiry > 30 and 'text-bg-success' or domain.days_until_expiry > 7 and 'text-bg-warning' or 'text-bg-danger'}">
                                                 <t t-esc="domain.days_until_expiry"/> days
                                             </span>
                                         </td>
+                                        <td>
+                                            <span t-if="domain.auto_renew" class="text-success"><i class="fa fa-check"/></span>
+                                            <span t-else="" class="text-muted"><i class="fa fa-times"/></span>
+                                        </td>
                                         <td class="text-end">
-                                            <a t-attf-href="/my/domains/#{domain.id}" class="btn btn-sm btn-outline-primary">
-                                                View Details
-                                            </a>
+                                            <div class="btn-group">
+                                                <a t-attf-href="/my/domains/#{domain.id}" class="btn btn-sm btn-outline-primary">Manage</a>
+                                                <a t-attf-href="/my/domains/#{domain.id}/renew" class="btn btn-sm btn-outline-success">Renew</a>
+                                            </div>
                                         </td>
                                     </tr>
                                 </t>
@@ -97,156 +233,327 @@
         </t>
     </template>
 
-    <!-- Domain Detail -->
+    <!-- Domain Detail with Management -->
     <template id="portal_domain_detail" name="Domain Details">
         <t t-call="portal.portal_layout">
-            <t t-set="o_portal_fullwidth_alert" groups="resellerclub_integration.group_resellerclub_user">
-                <t t-call="portal.portal_back_in_edit_mode">
-                    <t t-set="backend_url" t-value="'/odoo/resellerclub.domain/%s' % (domain.id)"/>
-                </t>
-            </t>
-
             <div class="row mb-3">
-                <div class="col-12">
-                    <a href="/my/domains" class="btn btn-secondary btn-sm">
-                        <i class="fa fa-arrow-left"/> Back to Domains
-                    </a>
+                <div class="col">
+                    <a href="/my/domains" class="btn btn-secondary btn-sm"><i class="fa fa-arrow-left me-2"/>Back to Domains</a>
                 </div>
             </div>
 
             <div class="card mb-4">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">
-                        <i class="fa fa-globe me-2"/>
-                        <t t-esc="domain.domain_name"/>
-                    </h4>
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0"><i class="fa fa-globe me-2"/><t t-esc="domain.domain_name"/></h4>
+                    <span t-attf-class="badge #{domain.status == 'active' and 'bg-success' or 'bg-warning'}"><t t-esc="domain.status"/></span>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
                             <h5>Domain Information</h5>
                             <table class="table table-sm">
-                                <tr>
-                                    <td><strong>Status</strong></td>
-                                    <td>
-                                        <span t-attf-class="badge #{domain.status == 'active' and 'text-bg-success' or 'text-bg-warning'}">
-                                            <t t-esc="domain.status"/>
-                                        </span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Registration Date</strong></td>
-                                    <td t-field="domain.registration_date"/>
-                                </tr>
-                                <tr>
-                                    <td><strong>Expiration Date</strong></td>
-                                    <td t-field="domain.expiration_date"/>
-                                </tr>
+                                <tr><td><strong>Registration Date</strong></td><td t-field="domain.registration_date"/></tr>
+                                <tr><td><strong>Expiration Date</strong></td><td t-field="domain.expiration_date"/></tr>
                                 <tr>
                                     <td><strong>Days Until Expiry</strong></td>
-                                    <td>
-                                        <span t-attf-class="badge #{domain.expiry_status == 'ok' and 'text-bg-success' or domain.expiry_status == 'warning' and 'text-bg-warning' or 'text-bg-danger'}">
-                                            <t t-esc="domain.days_until_expiry"/> days
-                                        </span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Auto Renew</strong></td>
-                                    <td>
-                                        <span t-if="domain.auto_renew" class="text-success">
-                                            <i class="fa fa-check"/> Enabled
-                                        </span>
-                                        <span t-else="" class="text-muted">Disabled</span>
-                                    </td>
+                                    <td><span t-attf-class="badge #{domain.days_until_expiry > 30 and 'text-bg-success' or domain.days_until_expiry > 7 and 'text-bg-warning' or 'text-bg-danger'}"><t t-esc="domain.days_until_expiry"/> days</span></td>
                                 </tr>
                             </table>
                         </div>
                         <div class="col-md-6">
-                            <h5>Protection</h5>
+                            <h5>Settings</h5>
                             <table class="table table-sm">
                                 <tr>
-                                    <td><strong>Privacy Protection</strong></td>
+                                    <td><strong>Auto Renew</strong></td>
                                     <td>
-                                        <span t-if="domain.privacy_protection" class="text-success">
-                                            <i class="fa fa-shield"/> Enabled
-                                        </span>
-                                        <span t-else="" class="text-muted">Disabled</span>
+                                        <button type="button" class="btn btn-sm toggle-autorenew" t-att-data-domain-id="domain.id"
+                                                t-attf-class="#{domain.auto_renew and 'btn-success' or 'btn-outline-secondary'}">
+                                            <t t-if="domain.auto_renew"><i class="fa fa-check me-1"/>Enabled</t>
+                                            <t t-else=""><i class="fa fa-times me-1"/>Disabled</t>
+                                        </button>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td><strong>Theft Protection</strong></td>
                                     <td>
-                                        <span t-if="domain.theft_protection" class="text-success">
-                                            <i class="fa fa-lock"/> Locked
-                                        </span>
-                                        <span t-else="" class="text-warning">Unlocked</span>
+                                        <button type="button" class="btn btn-sm toggle-lock" t-att-data-domain-id="domain.id"
+                                                t-attf-class="#{domain.is_locked and 'btn-warning' or 'btn-outline-secondary'}">
+                                            <t t-if="domain.is_locked"><i class="fa fa-lock me-1"/>Locked</t>
+                                            <t t-else=""><i class="fa fa-unlock me-1"/>Unlocked</t>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Privacy Protection</strong></td>
+                                    <td>
+                                        <span t-if="domain.privacy_protection" class="text-success"><i class="fa fa-shield me-1"/>Enabled</span>
+                                        <span t-else="" class="text-muted">Disabled</span>
                                     </td>
                                 </tr>
                             </table>
-
-                            <h5 class="mt-4">Nameservers</h5>
-                            <ul class="list-unstyled">
-                                <li t-if="domain.ns1"><code t-esc="domain.ns1"/></li>
-                                <li t-if="domain.ns2"><code t-esc="domain.ns2"/></li>
-                                <li t-if="domain.ns3"><code t-esc="domain.ns3"/></li>
-                                <li t-if="domain.ns4"><code t-esc="domain.ns4"/></li>
-                            </ul>
                         </div>
                     </div>
+
+                    <!-- Nameservers -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <h5>Nameservers</h5>
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-2"><strong>NS1:</strong> <code t-esc="domain.ns1 or '-'"/></div>
+                                            <div class="mb-2"><strong>NS2:</strong> <code t-esc="domain.ns2 or '-'"/></div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-2"><strong>NS3:</strong> <code t-esc="domain.ns3 or '-'"/></div>
+                                            <div class="mb-2"><strong>NS4:</strong> <code t-esc="domain.ns4 or '-'"/></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="d-flex flex-wrap gap-2">
+                                <a t-attf-href="/my/domains/#{domain.id}/renew" class="btn btn-success"><i class="fa fa-refresh me-2"/>Renew Domain</a>
+                                <a t-attf-href="/my/domains/#{domain.id}/dns" class="btn btn-info"><i class="fa fa-cog me-2"/>Manage DNS</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DNS Records Preview -->
+            <t t-if="dns_records">
+                <div class="card">
+                    <div class="card-header"><h5 class="mb-0">DNS Records</h5></div>
+                    <div class="card-body">
+                        <table class="table table-sm mb-0">
+                            <thead><tr><th>Type</th><th>Host</th><th>Value</th><th>TTL</th></tr></thead>
+                            <tbody>
+                                <t t-foreach="dns_records[:5]" t-as="record">
+                                    <tr>
+                                        <td><span class="badge text-bg-secondary" t-esc="record.record_type"/></td>
+                                        <td t-esc="record.host"/>
+                                        <td><code t-esc="record.value[:50]"/></td>
+                                        <td t-esc="record.ttl"/>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                        <t t-if="len(dns_records) > 5">
+                            <a t-attf-href="/my/domains/#{domain.id}/dns" class="btn btn-link">View all <t t-esc="len(dns_records)"/> records</a>
+                        </t>
+                    </div>
+                </div>
+            </t>
+
+            <script>
+                document.querySelectorAll('.toggle-autorenew').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const domainId = this.dataset.domainId;
+                        fetch(`/my/domains/${domainId}/toggle-autorenew`, {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({jsonrpc: '2.0', method: 'call', params: {}})
+                        }).then(r => r.json()).then(data => {
+                            if (data.result &amp;&amp; data.result.success) location.reload();
+                        });
+                    });
+                });
+                document.querySelectorAll('.toggle-lock').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const domainId = this.dataset.domainId;
+                        fetch(`/my/domains/${domainId}/toggle-lock`, {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({jsonrpc: '2.0', method: 'call', params: {}})
+                        }).then(r => r.json()).then(data => {
+                            if (data.result &amp;&amp; data.result.success) location.reload();
+                        });
+                    });
+                });
+            </script>
+        </t>
+    </template>
+
+    <!-- Domain Renewal Page -->
+    <template id="portal_domain_renew" name="Renew Domain">
+        <t t-call="portal.portal_layout">
+            <div class="row mb-3">
+                <div class="col"><a t-attf-href="/my/domains/#{domain.id}" class="btn btn-secondary btn-sm"><i class="fa fa-arrow-left me-2"/>Back</a></div>
+            </div>
+
+            <div class="card">
+                <div class="card-header bg-success text-white"><h4 class="mb-0"><i class="fa fa-refresh me-2"/>Renew <t t-esc="domain.domain_name"/></h4></div>
+                <div class="card-body">
+                    <form t-attf-action="/my/domains/#{domain.id}/renew/submit" method="post">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <div class="mb-3">
+                            <label class="form-label">Current Expiration</label>
+                            <p class="form-control-plaintext" t-field="domain.expiration_date"/>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Renewal Period</label>
+                            <select name="years" class="form-select" id="years-select">
+                                <t t-foreach="range(1, max_years + 1)" t-as="year">
+                                    <option t-att-value="year"><t t-esc="year"/> year<t t-if="year > 1">s</t>
+                                        <t t-if="product"> - <t t-esc="'%.2f' % (product.list_price * year)"/></t>
+                                    </option>
+                                </t>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-success"><i class="fa fa-shopping-cart me-2"/>Add to Cart</button>
+                    </form>
                 </div>
             </div>
         </t>
     </template>
 
-    <!-- Hosting List -->
+    <!-- Domain DNS Management -->
+    <template id="portal_domain_dns" name="DNS Management">
+        <t t-call="portal.portal_layout">
+            <div class="row mb-3">
+                <div class="col"><a t-attf-href="/my/domains/#{domain.id}" class="btn btn-secondary btn-sm"><i class="fa fa-arrow-left me-2"/>Back to Domain</a></div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0"><i class="fa fa-cog me-2"/>DNS Management: <t t-esc="domain.domain_name"/></h4>
+                    <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#addRecordModal">
+                        <i class="fa fa-plus me-1"/>Add Record
+                    </button>
+                </div>
+                <div class="card-body">
+                    <t t-if="not dns_records">
+                        <div class="alert alert-info">No DNS records configured.</div>
+                    </t>
+                    <t t-if="dns_records">
+                        <table class="table table-hover">
+                            <thead><tr><th>Type</th><th>Host</th><th>Value</th><th>TTL</th><th>Priority</th><th class="text-end">Actions</th></tr></thead>
+                            <tbody>
+                                <t t-foreach="dns_records" t-as="record">
+                                    <tr>
+                                        <td><span class="badge text-bg-primary" t-esc="record.record_type"/></td>
+                                        <td t-esc="record.host"/>
+                                        <td><code style="word-break: break-all;" t-esc="record.value"/></td>
+                                        <td t-esc="record.ttl"/>
+                                        <td t-esc="record.priority or '-'"/>
+                                        <td class="text-end">
+                                            <button type="button" class="btn btn-sm btn-outline-danger delete-record" t-att-data-record-id="record.id">
+                                                <i class="fa fa-trash"/>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </t>
+                </div>
+            </div>
+
+            <!-- Add Record Modal -->
+            <div class="modal fade" id="addRecordModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header"><h5 class="modal-title">Add DNS Record</h5><button type="button" class="btn-close" data-bs-dismiss="modal"/></div>
+                        <div class="modal-body">
+                            <form id="add-record-form">
+                                <div class="mb-3">
+                                    <label class="form-label">Record Type</label>
+                                    <select name="record_type" class="form-select" required="required">
+                                        <t t-foreach="record_types" t-as="rt"><option t-att-value="rt[0]" t-esc="rt[1]"/></t>
+                                    </select>
+                                </div>
+                                <div class="mb-3"><label class="form-label">Host</label><input type="text" name="host" class="form-control" placeholder="@ or subdomain" required="required"/></div>
+                                <div class="mb-3"><label class="form-label">Value</label><input type="text" name="value" class="form-control" required="required"/></div>
+                                <div class="mb-3"><label class="form-label">TTL</label><input type="number" name="ttl" class="form-control" value="14400"/></div>
+                                <div class="mb-3"><label class="form-label">Priority (MX/SRV only)</label><input type="number" name="priority" class="form-control"/></div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-primary" id="save-record">Add Record</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                const domainId = <t t-esc="domain.id"/>;
+
+                document.getElementById('save-record').addEventListener('click', function() {
+                    const form = document.getElementById('add-record-form');
+                    const formData = new FormData(form);
+                    fetch(`/my/domains/${domainId}/dns/add`, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            jsonrpc: '2.0', method: 'call',
+                            params: {
+                                domain_id: domainId,
+                                record_type: formData.get('record_type'),
+                                host: formData.get('host'),
+                                value: formData.get('value'),
+                                ttl: formData.get('ttl'),
+                                priority: formData.get('priority')
+                            }
+                        })
+                    }).then(r => r.json()).then(data => {
+                        if (data.result &amp;&amp; data.result.success) location.reload();
+                        else alert(data.result?.error || 'Error adding record');
+                    });
+                });
+
+                document.querySelectorAll('.delete-record').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        if (!confirm('Delete this record?')) return;
+                        const recordId = this.dataset.recordId;
+                        fetch(`/my/domains/${domainId}/dns/delete/${recordId}`, {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({jsonrpc: '2.0', method: 'call', params: {}})
+                        }).then(r => r.json()).then(data => {
+                            if (data.result &amp;&amp; data.result.success) location.reload();
+                        });
+                    });
+                });
+            </script>
+        </t>
+    </template>
+
+    <!-- ======================================= -->
+    <!-- HOSTING PORTAL -->
+    <!-- ======================================= -->
+
     <template id="portal_my_hosting" name="My Hosting">
         <t t-call="portal.portal_layout">
             <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <t t-call="portal.portal_searchbar"><t t-set="title">Hosting Services</t></t>
 
-            <t t-call="portal.portal_searchbar">
-                <t t-set="title">Hosting Services</t>
-            </t>
+            <div class="mb-3"><a href="/hosting" class="btn btn-primary"><i class="fa fa-plus me-2"/>New Hosting</a></div>
 
-            <t t-if="not hostings">
-                <div class="alert alert-info" role="alert">
-                    You don't have any hosting services yet.
-                </div>
-            </t>
-
+            <t t-if="not hostings"><div class="alert alert-info">You don't have any hosting services yet.</div></t>
             <t t-if="hostings">
                 <div class="card">
                     <div class="table-responsive">
                         <table class="table table-hover mb-0">
-                            <thead class="bg-light">
-                                <tr>
-                                    <th>Domain</th>
-                                    <th>Type</th>
-                                    <th>Plan</th>
-                                    <th>Status</th>
-                                    <th>Expiration</th>
-                                    <th class="text-end">Actions</th>
-                                </tr>
-                            </thead>
+                            <thead class="bg-light"><tr><th>Domain</th><th>Type</th><th>Plan</th><th>Status</th><th>Expiration</th><th class="text-end">Actions</th></tr></thead>
                             <tbody>
                                 <t t-foreach="hostings" t-as="hosting">
                                     <tr>
-                                        <td>
-                                            <a t-attf-href="/my/hosting/#{hosting.id}">
-                                                <strong t-field="hosting.domain_name"/>
-                                            </a>
-                                        </td>
+                                        <td><a t-attf-href="/my/hosting/#{hosting.id}"><strong t-field="hosting.domain_name"/></a></td>
                                         <td t-field="hosting.hosting_type"/>
                                         <td t-field="hosting.plan_name"/>
-                                        <td>
-                                            <span t-attf-class="badge #{hosting.status == 'active' and 'text-bg-success' or 'text-bg-warning'}">
-                                                <t t-esc="hosting.status"/>
-                                            </span>
-                                        </td>
+                                        <td><span t-attf-class="badge #{hosting.status == 'active' and 'text-bg-success' or 'text-bg-warning'}"><t t-esc="hosting.status"/></span></td>
                                         <td t-field="hosting.expiration_date"/>
                                         <td class="text-end">
-                                            <a t-attf-href="/my/hosting/#{hosting.id}" class="btn btn-sm btn-outline-primary">
-                                                View
-                                            </a>
+                                            <a t-attf-href="/my/hosting/#{hosting.id}" class="btn btn-sm btn-outline-primary">Manage</a>
+                                            <a t-attf-href="/my/hosting/#{hosting.id}/renew" class="btn btn-sm btn-outline-success">Renew</a>
                                         </td>
                                     </tr>
                                 </t>
@@ -254,10 +561,7 @@
                         </table>
                     </div>
                 </div>
-
-                <div t-if="pager" class="o_portal_pager text-center mt-3">
-                    <t t-call="portal.pager"/>
-                </div>
+                <div t-if="pager" class="o_portal_pager text-center mt-3"><t t-call="portal.pager"/></div>
             </t>
         </t>
     </template>
@@ -265,120 +569,92 @@
     <!-- Hosting Detail -->
     <template id="portal_hosting_detail" name="Hosting Details">
         <t t-call="portal.portal_layout">
-            <div class="row mb-3">
-                <div class="col-12">
-                    <a href="/my/hosting" class="btn btn-secondary btn-sm">
-                        <i class="fa fa-arrow-left"/> Back to Hosting
-                    </a>
-                </div>
-            </div>
-
+            <div class="row mb-3"><div class="col"><a href="/my/hosting" class="btn btn-secondary btn-sm"><i class="fa fa-arrow-left me-2"/>Back</a></div></div>
             <div class="card">
-                <div class="card-header bg-info text-white">
-                    <h4 class="mb-0">
-                        <i class="fa fa-server me-2"/>
-                        <t t-esc="hosting.domain_name"/>
-                    </h4>
+                <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0"><i class="fa fa-server me-2"/><t t-esc="hosting.domain_name"/></h4>
+                    <span t-attf-class="badge #{hosting.status == 'active' and 'bg-success' or 'bg-warning'}"><t t-esc="hosting.status"/></span>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
                             <h5>Service Information</h5>
                             <table class="table table-sm">
-                                <tr>
-                                    <td><strong>Type</strong></td>
-                                    <td t-field="hosting.hosting_type"/>
-                                </tr>
-                                <tr>
-                                    <td><strong>Plan</strong></td>
-                                    <td t-field="hosting.plan_name"/>
-                                </tr>
-                                <tr>
-                                    <td><strong>Status</strong></td>
-                                    <td>
-                                        <span t-attf-class="badge #{hosting.status == 'active' and 'text-bg-success' or 'text-bg-warning'}">
-                                            <t t-esc="hosting.status"/>
-                                        </span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Expiration</strong></td>
-                                    <td t-field="hosting.expiration_date"/>
-                                </tr>
+                                <tr><td><strong>Type</strong></td><td t-field="hosting.hosting_type"/></tr>
+                                <tr><td><strong>Plan</strong></td><td t-field="hosting.plan_name"/></tr>
+                                <tr><td><strong>Expiration</strong></td><td t-field="hosting.expiration_date"/></tr>
+                                <tr><td><strong>Auto Renew</strong></td><td><span t-if="hosting.auto_renew" class="text-success"><i class="fa fa-check"/> Yes</span><span t-else="" class="text-muted">No</span></td></tr>
                             </table>
                         </div>
                         <div class="col-md-6">
                             <h5>Resources</h5>
                             <table class="table table-sm">
-                                <tr t-if="hosting.disk_space">
-                                    <td><strong>Disk Space</strong></td>
-                                    <td t-field="hosting.disk_space"/>
-                                </tr>
-                                <tr t-if="hosting.bandwidth">
-                                    <td><strong>Bandwidth</strong></td>
-                                    <td t-field="hosting.bandwidth"/>
-                                </tr>
-                                <tr t-if="hosting.email_accounts">
-                                    <td><strong>Email Accounts</strong></td>
-                                    <td t-field="hosting.email_accounts"/>
-                                </tr>
+                                <tr t-if="hosting.disk_space"><td><strong>Disk Space</strong></td><td t-field="hosting.disk_space"/></tr>
+                                <tr t-if="hosting.bandwidth"><td><strong>Bandwidth</strong></td><td t-field="hosting.bandwidth"/></tr>
+                                <tr t-if="hosting.email_accounts"><td><strong>Email Accounts</strong></td><td t-field="hosting.email_accounts"/></tr>
                             </table>
                         </div>
+                    </div>
+                    <div class="mt-4">
+                        <a t-attf-href="/my/hosting/#{hosting.id}/renew" class="btn btn-success"><i class="fa fa-refresh me-2"/>Renew</a>
+                        <a t-if="hosting.cpanel_url" t-att-href="hosting.cpanel_url" target="_blank" class="btn btn-primary"><i class="fa fa-external-link me-2"/>Control Panel</a>
                     </div>
                 </div>
             </div>
         </t>
     </template>
 
-    <!-- SSL List -->
+    <!-- Hosting Renewal -->
+    <template id="portal_hosting_renew" name="Renew Hosting">
+        <t t-call="portal.portal_layout">
+            <div class="row mb-3"><div class="col"><a t-attf-href="/my/hosting/#{hosting.id}" class="btn btn-secondary btn-sm"><i class="fa fa-arrow-left me-2"/>Back</a></div></div>
+            <div class="card">
+                <div class="card-header bg-success text-white"><h4 class="mb-0"><i class="fa fa-refresh me-2"/>Renew Hosting</h4></div>
+                <div class="card-body">
+                    <p><strong>Domain:</strong> <t t-esc="hosting.domain_name"/></p>
+                    <p><strong>Current Expiration:</strong> <span t-field="hosting.expiration_date"/></p>
+                    <form action="#" method="post">
+                        <div class="mb-3">
+                            <label class="form-label">Renewal Period</label>
+                            <select name="months" class="form-select">
+                                <t t-foreach="billing_periods" t-as="period"><option t-att-value="period[0]" t-esc="period[1]"/></t>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-success"><i class="fa fa-shopping-cart me-2"/>Add to Cart</button>
+                    </form>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- ======================================= -->
+    <!-- SSL PORTAL -->
+    <!-- ======================================= -->
+
     <template id="portal_my_ssl" name="My SSL Certificates">
         <t t-call="portal.portal_layout">
             <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <t t-call="portal.portal_searchbar"><t t-set="title">SSL Certificates</t></t>
 
-            <t t-call="portal.portal_searchbar">
-                <t t-set="title">SSL Certificates</t>
-            </t>
+            <div class="mb-3"><a href="/ssl-certificates" class="btn btn-success"><i class="fa fa-plus me-2"/>New SSL Certificate</a></div>
 
-            <t t-if="not ssls">
-                <div class="alert alert-info" role="alert">
-                    You don't have any SSL certificates yet.
-                </div>
-            </t>
-
+            <t t-if="not ssls"><div class="alert alert-info">You don't have any SSL certificates yet.</div></t>
             <t t-if="ssls">
                 <div class="card">
                     <div class="table-responsive">
                         <table class="table table-hover mb-0">
-                            <thead class="bg-light">
-                                <tr>
-                                    <th>Domain</th>
-                                    <th>Type</th>
-                                    <th>Brand</th>
-                                    <th>Status</th>
-                                    <th>Expiration</th>
-                                    <th class="text-end">Actions</th>
-                                </tr>
-                            </thead>
+                            <thead class="bg-light"><tr><th>Domain</th><th>Type</th><th>Brand</th><th>Status</th><th>Expiration</th><th class="text-end">Actions</th></tr></thead>
                             <tbody>
                                 <t t-foreach="ssls" t-as="ssl">
                                     <tr>
-                                        <td>
-                                            <a t-attf-href="/my/ssl/#{ssl.id}">
-                                                <strong t-field="ssl.domain_name"/>
-                                            </a>
-                                        </td>
+                                        <td><a t-attf-href="/my/ssl/#{ssl.id}"><strong t-field="ssl.domain_name"/></a></td>
                                         <td t-field="ssl.ssl_type"/>
                                         <td t-field="ssl.brand"/>
-                                        <td>
-                                            <span t-attf-class="badge #{ssl.status == 'active' and 'text-bg-success' or ssl.status == 'pending_issuance' and 'text-bg-info' or 'text-bg-warning'}">
-                                                <t t-esc="ssl.status"/>
-                                            </span>
-                                        </td>
+                                        <td><span t-attf-class="badge #{ssl.status == 'active' and 'text-bg-success' or ssl.status == 'pending_issuance' and 'text-bg-info' or 'text-bg-warning'}"><t t-esc="ssl.status"/></span></td>
                                         <td t-field="ssl.expiration_date"/>
                                         <td class="text-end">
-                                            <a t-attf-href="/my/ssl/#{ssl.id}" class="btn btn-sm btn-outline-primary">
-                                                View
-                                            </a>
+                                            <a t-attf-href="/my/ssl/#{ssl.id}" class="btn btn-sm btn-outline-primary">View</a>
+                                            <a t-if="ssl.status == 'active'" t-attf-href="/my/ssl/#{ssl.id}/download" class="btn btn-sm btn-outline-success">Download</a>
                                         </td>
                                     </tr>
                                 </t>
@@ -386,10 +662,7 @@
                         </table>
                     </div>
                 </div>
-
-                <div t-if="pager" class="o_portal_pager text-center mt-3">
-                    <t t-call="portal.pager"/>
-                </div>
+                <div t-if="pager" class="o_portal_pager text-center mt-3"><t t-call="portal.pager"/></div>
             </t>
         </t>
     </template>
@@ -397,72 +670,61 @@
     <!-- SSL Detail -->
     <template id="portal_ssl_detail" name="SSL Certificate Details">
         <t t-call="portal.portal_layout">
-            <div class="row mb-3">
-                <div class="col-12">
-                    <a href="/my/ssl" class="btn btn-secondary btn-sm">
-                        <i class="fa fa-arrow-left"/> Back to SSL
-                    </a>
-                </div>
-            </div>
-
+            <div class="row mb-3"><div class="col"><a href="/my/ssl" class="btn btn-secondary btn-sm"><i class="fa fa-arrow-left me-2"/>Back</a></div></div>
             <div class="card">
-                <div class="card-header bg-success text-white">
-                    <h4 class="mb-0">
-                        <i class="fa fa-lock me-2"/>
-                        <t t-esc="ssl.domain_name"/>
-                    </h4>
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0"><i class="fa fa-lock me-2"/><t t-esc="ssl.domain_name"/></h4>
+                    <span t-attf-class="badge #{ssl.status == 'active' and 'bg-light text-success' or 'bg-warning'}"><t t-esc="ssl.status"/></span>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
                             <h5>Certificate Information</h5>
                             <table class="table table-sm">
-                                <tr>
-                                    <td><strong>Type</strong></td>
-                                    <td t-field="ssl.ssl_type"/>
-                                </tr>
-                                <tr>
-                                    <td><strong>Brand</strong></td>
-                                    <td t-field="ssl.brand"/>
-                                </tr>
-                                <tr>
-                                    <td><strong>Plan</strong></td>
-                                    <td t-field="ssl.plan_name"/>
-                                </tr>
-                                <tr>
-                                    <td><strong>Status</strong></td>
-                                    <td>
-                                        <span t-attf-class="badge #{ssl.status == 'active' and 'text-bg-success' or ssl.status == 'pending_issuance' and 'text-bg-info' or 'text-bg-warning'}">
-                                            <t t-esc="ssl.status"/>
-                                        </span>
-                                    </td>
-                                </tr>
+                                <tr><td><strong>Type</strong></td><td t-field="ssl.ssl_type"/></tr>
+                                <tr><td><strong>Brand</strong></td><td t-field="ssl.brand"/></tr>
+                                <tr><td><strong>Plan</strong></td><td t-field="ssl.plan_name"/></tr>
                             </table>
                         </div>
                         <div class="col-md-6">
                             <h5>Validity</h5>
                             <table class="table table-sm">
-                                <tr>
-                                    <td><strong>Issuance Date</strong></td>
-                                    <td t-field="ssl.issuance_date"/>
-                                </tr>
-                                <tr>
-                                    <td><strong>Expiration Date</strong></td>
-                                    <td t-field="ssl.expiration_date"/>
-                                </tr>
-                                <tr>
-                                    <td><strong>Days Until Expiry</strong></td>
-                                    <td>
-                                        <span t-attf-class="badge #{ssl.expiry_status == 'ok' and 'text-bg-success' or ssl.expiry_status == 'warning' and 'text-bg-warning' or 'text-bg-danger'}">
-                                            <t t-esc="ssl.days_until_expiry"/> days
-                                        </span>
-                                    </td>
-                                </tr>
+                                <tr><td><strong>Issuance Date</strong></td><td t-field="ssl.issuance_date"/></tr>
+                                <tr><td><strong>Expiration Date</strong></td><td t-field="ssl.expiration_date"/></tr>
+                                <tr><td><strong>Days Until Expiry</strong></td><td><span t-attf-class="badge #{ssl.days_until_expiry > 30 and 'text-bg-success' or ssl.days_until_expiry > 7 and 'text-bg-warning' or 'text-bg-danger'}"><t t-esc="ssl.days_until_expiry"/> days</span></td></tr>
                             </table>
                         </div>
+                    </div>
+                    <div class="mt-4">
+                        <a t-if="ssl.status == 'active'" t-attf-href="/my/ssl/#{ssl.id}/download" class="btn btn-success"><i class="fa fa-download me-2"/>Download Certificate</a>
+                        <a t-attf-href="/my/ssl/#{ssl.id}/renew" class="btn btn-primary"><i class="fa fa-refresh me-2"/>Renew</a>
                     </div>
                 </div>
             </div>
         </t>
     </template>
+
+    <!-- SSL Renewal -->
+    <template id="portal_ssl_renew" name="Renew SSL">
+        <t t-call="portal.portal_layout">
+            <div class="row mb-3"><div class="col"><a t-attf-href="/my/ssl/#{ssl.id}" class="btn btn-secondary btn-sm"><i class="fa fa-arrow-left me-2"/>Back</a></div></div>
+            <div class="card">
+                <div class="card-header bg-success text-white"><h4 class="mb-0"><i class="fa fa-refresh me-2"/>Renew SSL Certificate</h4></div>
+                <div class="card-body">
+                    <p><strong>Domain:</strong> <t t-esc="ssl.domain_name"/></p>
+                    <p><strong>Type:</strong> <span t-field="ssl.ssl_type"/></p>
+                    <form action="#" method="post">
+                        <div class="mb-3">
+                            <label class="form-label">Renewal Period</label>
+                            <select name="years" class="form-select">
+                                <t t-foreach="years" t-as="year"><option t-att-value="year"><t t-esc="year"/> year<t t-if="year > 1">s</t></option></t>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-success"><i class="fa fa-shopping-cart me-2"/>Add to Cart</button>
+                    </form>
+                </div>
+            </div>
+        </t>
+    </template>
+
 </odoo>
