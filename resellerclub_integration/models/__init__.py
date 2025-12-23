@@ -8,6 +8,8 @@ from . import resellerclub_hosting
 from . import resellerclub_ssl
 from . import resellerclub_dns
 from . import resellerclub_order
+from . import resellerclub_subscription
 from . import product_template
 from . import sale_order
 from . import res_partner
+from . import website

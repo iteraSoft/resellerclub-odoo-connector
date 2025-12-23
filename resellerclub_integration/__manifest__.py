@@ -1,54 +1,49 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'ResellerClub Integration',
-    'version': '19.0.1.0.0',
-    'category': 'Sales/Sales',
-    'summary': 'Complete integration with ResellerClub API for domain, hosting, SSL and more',
+    'version': '19.0.1.1.0',
+    'category': 'Sales/Subscriptions',
+    'summary': 'Complete ResellerClub integration with Odoo Subscriptions for domains, hosting & SSL',
     'description': """
 ResellerClub Integration for Odoo
 =================================
 
-This module provides complete integration with ResellerClub HTTP API allowing you to:
+Complete integration with ResellerClub HTTP API, fully integrated with Odoo's
+Subscription module for automated recurring billing and service management.
 
 **Domain Management**
-- Register new domains
-- Transfer domains from other registrars
-- Renew domains
-- Manage DNS records
+- Register, transfer, and renew domains
+- DNS record management (A, AAAA, CNAME, MX, TXT, NS, SRV)
 - WHOIS privacy protection
-- Domain lock/unlock
+- Domain lock/unlock (theft protection)
+- Automatic renewal via subscriptions
 
 **Hosting Services**
-- Single Domain Hosting
-- Multi Domain Hosting
-- Reseller Hosting
-- Email Hosting
+- Single Domain, Multi Domain, and Reseller Hosting
+- Email Hosting with account management
+- VPS and Dedicated Servers
+- Automatic provisioning and renewal
 
-**Server Management**
-- VPS Servers
-- Dedicated Servers
-- Managed Servers
+**SSL Certificates**
+- DV, OV, and EV certificates
+- Wildcard and Multi-domain (SAN)
+- CSR generation and enrollment
+- Automatic renewal notifications
 
-**Security Products**
-- SSL Certificates (Thawte, Comodo, etc.)
-- SiteLock
-- CodeGuard Backup
+**Subscription Integration**
+- Recurring billing via Odoo Subscriptions
+- Automatic invoice generation
+- Customer self-service portal
+- Subscription upsell/cross-sell
+- Renewal automation with payment tokenization
 
-**Additional Features**
-- Customer synchronization with ResellerClub
-- Automated order processing
-- Service status monitoring
-- Renewal reminders and automation
-- Customer portal for service management
-- Integrated billing and invoicing
-- Multi-currency support
-- Sandbox/Test mode support
-
-**Technical Features**
-- Asynchronous API calls
-- Webhook support for status updates
-- Comprehensive logging
-- Error handling and retry mechanisms
+**Standard Odoo Features**
+- Full activity/chatter integration
+- Automated scheduled actions
+- Email templates for notifications
+- Multi-company support
+- Customer portal access
+- PDF reports
     """,
     'author': 'iteraSoft',
     'website': 'https://www.iterasoft.com',
@@ -56,12 +51,16 @@ This module provides complete integration with ResellerClub HTTP API allowing yo
     'depends': [
         'base',
         'sale_management',
+        'sale_subscription',  # Subscription management
         'account',
         'contacts',
         'product',
         'mail',
         'portal',
-        'website_sale',
+        'website',  # Multi-website support
+        'website_sale',  # E-commerce integration
+        'utm',  # Campaign tracking
+        'rating',  # Customer satisfaction
     ],
     'data': [
         # Security
@@ -69,8 +68,10 @@ This module provides complete integration with ResellerClub HTTP API allowing yo
         'security/ir.model.access.csv',
         # Data
         'data/product_category_data.xml',
+        'data/subscription_plan_data.xml',
         'data/cron_data.xml',
         'data/mail_template_data.xml',
+        'data/activity_type_data.xml',
         # Views
         'views/res_config_settings_views.xml',
         'views/resellerclub_customer_views.xml',
@@ -90,6 +91,8 @@ This module provides complete integration with ResellerClub HTTP API allowing yo
         'wizards/hosting_order_wizard_views.xml',
         # Portal
         'views/portal_templates.xml',
+        # Website Templates
+        'views/website_templates.xml',
         # Reports
         'reports/service_report_templates.xml',
     ],

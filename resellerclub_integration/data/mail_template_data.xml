@@ -1,159 +1,1190 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data noupdate="1">
-        <!-- Domain Expiry Notification -->
-        <record id="mail_template_domain_expiry" model="mail.template">
-            <field name="name">ResellerClub: Domain Expiry Reminder</field>
+        <!--
+            ResellerClub Email Templates
+            Using Odoo's standard mail template system with QWeb rendering
+            All templates extend mail.mail_notification_layout for consistent branding
+        -->
+
+        <!-- ======================= -->
+        <!-- DOMAIN EMAIL TEMPLATES -->
+        <!-- ======================= -->
+
+        <!-- Domain Registration Confirmation -->
+        <record id="mail_template_domain_registered" model="mail.template">
+            <field name="name">ResellerClub: Domain Registration Confirmation</field>
             <field name="model_id" ref="model_resellerclub_domain"/>
-            <field name="email_from">{{ (object.company_id.email or user.email_formatted) }}</field>
-            <field name="email_to">{{ object.partner_id.email }}</field>
-            <field name="subject">Domain Expiry Reminder: {{ object.domain_name }}</field>
+            <field name="email_from">{{ (object.company_id.email_formatted or object.company_id.email or user.email_formatted) }}</field>
+            <field name="email_to">{{ object.partner_id.email_formatted or object.partner_id.email }}</field>
+            <field name="partner_to">{{ object.partner_id.id }}</field>
+            <field name="subject">🌐 Domain Registered Successfully: {{ object.domain_name }}</field>
+            <field name="description">Sent when a domain is successfully registered</field>
             <field name="body_html" type="html">
-<div style="margin: 0px; padding: 0px; font-family: Arial, Helvetica, sans-serif;">
-    <table style="width: 100%; max-width: 600px; margin: auto; border-collapse: collapse;">
+<t t-set="record" t-value="object"/>
+<t t-call="mail.mail_notification_layout">
+    <t t-set="company" t-value="record.company_id"/>
+    <t t-set="record_name" t-value="record.domain_name"/>
+
+    <table border="0" cellpadding="0" cellspacing="0" style="padding-top: 16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; color: #454748; width: 100%; border-collapse:separate;">
         <tr>
-            <td style="padding: 20px; background-color: #875A7B; text-align: center;">
-                <h1 style="color: white; margin: 0;">Domain Expiry Reminder</h1>
-            </td>
-        </tr>
-        <tr>
-            <td style="padding: 30px; background-color: #f9f9f9;">
-                <p>Dear {{ object.partner_id.name }},</p>
+            <td align="center">
+                <table border="0" cellpadding="0" cellspacing="0" width="590" style="padding: 16px; background-color: white; color: #454748; border-collapse:separate;">
+                    <tbody>
+                        <!-- Header -->
+                        <tr>
+                            <td align="center" style="padding-bottom: 20px;">
+                                <h2 style="color: #28a745; margin: 0;">✅ Domain Registration Successful!</h2>
+                            </td>
+                        </tr>
 
-                <p>This is a reminder that your domain <strong>{{ object.domain_name }}</strong> will expire on <strong>{{ object.expiration_date }}</strong>.</p>
+                        <!-- Greeting -->
+                        <tr>
+                            <td style="padding: 10px 0;">
+                                <p style="margin: 0;">Dear <t t-out="record.partner_id.name or 'Valued Customer'"/>,</p>
+                            </td>
+                        </tr>
 
-                <div style="background-color: #fff3cd; border: 1px solid #ffc107; border-radius: 4px; padding: 15px; margin: 20px 0;">
-                    <p style="margin: 0;"><strong>Domain:</strong> {{ object.domain_name }}</p>
-                    <p style="margin: 5px 0 0 0;"><strong>Expiration Date:</strong> {{ object.expiration_date }}</p>
-                    <p style="margin: 5px 0 0 0;"><strong>Days Remaining:</strong> {{ object.days_until_expiry }} days</p>
-                </div>
+                        <!-- Main Message -->
+                        <tr>
+                            <td style="padding: 10px 0;">
+                                <p style="margin: 0;">
+                                    Congratulations! Your domain <strong><t t-out="record.domain_name"/></strong> has been successfully registered.
+                                </p>
+                            </td>
+                        </tr>
 
-                <p>To avoid losing your domain, please renew it before the expiration date.</p>
+                        <!-- Domain Details Box -->
+                        <tr>
+                            <td style="padding: 20px 0;">
+                                <table width="100%" style="background-color: #f8f9fa; border-radius: 8px; border: 1px solid #dee2e6;">
+                                    <tr>
+                                        <td style="padding: 20px;">
+                                            <table width="100%">
+                                                <tr>
+                                                    <td width="40%" style="padding: 5px 0; color: #666;">Domain Name:</td>
+                                                    <td style="padding: 5px 0;"><strong><t t-out="record.domain_name"/></strong></td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding: 5px 0; color: #666;">Registration Date:</td>
+                                                    <td style="padding: 5px 0;"><t t-out="record.registration_date" t-options='{"widget": "date"}'/></td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding: 5px 0; color: #666;">Expiration Date:</td>
+                                                    <td style="padding: 5px 0;"><t t-out="record.expiration_date" t-options='{"widget": "date"}'/></td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding: 5px 0; color: #666;">Registration Period:</td>
+                                                    <td style="padding: 5px 0;"><t t-out="record.years"/> year(s)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding: 5px 0; color: #666;">Order ID:</td>
+                                                    <td style="padding: 5px 0;"><t t-out="record.resellerclub_order_id"/></td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
 
-                <p style="text-align: center; margin: 30px 0;">
-                    <a href="/my/domains" style="background-color: #875A7B; color: white; padding: 12px 30px; text-decoration: none; border-radius: 4px; display: inline-block;">Renew Domain</a>
-                </p>
+                        <!-- Nameservers Info -->
+                        <tr t-if="record.ns1">
+                            <td style="padding: 10px 0;">
+                                <p style="margin: 0 0 10px 0;"><strong>Nameservers:</strong></p>
+                                <ul style="margin: 0; padding-left: 20px; color: #666;">
+                                    <li t-if="record.ns1"><t t-out="record.ns1"/></li>
+                                    <li t-if="record.ns2"><t t-out="record.ns2"/></li>
+                                    <li t-if="record.ns3"><t t-out="record.ns3"/></li>
+                                    <li t-if="record.ns4"><t t-out="record.ns4"/></li>
+                                </ul>
+                            </td>
+                        </tr>
 
-                <p>If you have any questions, please don't hesitate to contact us.</p>
+                        <!-- CTA Button -->
+                        <tr>
+                            <td align="center" style="padding: 30px 0;">
+                                <a href="/my/domains"
+                                   style="background-color: #875A7B; color: white; padding: 14px 35px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">
+                                    Manage Your Domain
+                                </a>
+                            </td>
+                        </tr>
 
-                <p>Best regards,<br/>
-                {{ object.company_id.name }}</p>
-            </td>
-        </tr>
-        <tr>
-            <td style="padding: 15px; background-color: #eeeeee; text-align: center; font-size: 12px; color: #666;">
-                <p style="margin: 0;">This is an automated message from {{ object.company_id.name }}</p>
+                        <!-- Help Section -->
+                        <tr>
+                            <td style="padding: 15px 0; border-top: 1px solid #dee2e6;">
+                                <p style="margin: 0; color: #666; font-size: 13px;">
+                                    <strong>Need help?</strong> Visit our
+                                    <a href="/help" style="color: #875A7B;">Help Center</a>
+                                    or contact our support team.
+                                </p>
+                            </td>
+                        </tr>
+
+                        <!-- Signature -->
+                        <tr>
+                            <td style="padding: 20px 0 0 0;">
+                                <p style="margin: 0;">Best regards,<br/>
+                                <strong><t t-out="company.name"/></strong></p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </td>
         </tr>
     </table>
-</div>
+</t>
+            </field>
+            <field name="lang">{{ object.partner_id.lang }}</field>
+            <field name="auto_delete" eval="False"/>
+            <field name="report_template_ids" eval="[(4, ref('action_report_domain'))]"/>
+        </record>
+
+        <!-- Domain Expiry Notification - 30 Days -->
+        <record id="mail_template_domain_expiry_30" model="mail.template">
+            <field name="name">ResellerClub: Domain Expiry Reminder (30 Days)</field>
+            <field name="model_id" ref="model_resellerclub_domain"/>
+            <field name="email_from">{{ (object.company_id.email_formatted or object.company_id.email or user.email_formatted) }}</field>
+            <field name="email_to">{{ object.partner_id.email_formatted or object.partner_id.email }}</field>
+            <field name="partner_to">{{ object.partner_id.id }}</field>
+            <field name="subject">⚠️ Domain Expires in {{ object.days_until_expiry }} days: {{ object.domain_name }}</field>
+            <field name="description">Sent 30 days before domain expiration</field>
+            <field name="body_html" type="html">
+<t t-set="record" t-value="object"/>
+<t t-call="mail.mail_notification_layout">
+    <t t-set="company" t-value="record.company_id"/>
+
+    <table border="0" cellpadding="0" cellspacing="0" style="padding-top: 16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; color: #454748; width: 100%; border-collapse:separate;">
+        <tr>
+            <td align="center">
+                <table border="0" cellpadding="0" cellspacing="0" width="590" style="padding: 16px; background-color: white; color: #454748; border-collapse:separate;">
+                    <tbody>
+                        <!-- Alert Header -->
+                        <tr>
+                            <td style="background-color: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 20px; text-align: center;">
+                                <h2 style="color: #856404; margin: 0;">⏰ Domain Expiration Reminder</h2>
+                                <p style="margin: 10px 0 0 0; color: #856404;">
+                                    Your domain expires in <strong><t t-out="record.days_until_expiry"/> days</strong>
+                                </p>
+                            </td>
+                        </tr>
+
+                        <!-- Greeting -->
+                        <tr>
+                            <td style="padding: 20px 0 10px 0;">
+                                <p style="margin: 0;">Dear <t t-out="record.partner_id.name or 'Valued Customer'"/>,</p>
+                            </td>
+                        </tr>
+
+                        <!-- Main Message -->
+                        <tr>
+                            <td style="padding: 10px 0;">
+                                <p style="margin: 0;">
+                                    This is a friendly reminder that your domain <strong><t t-out="record.domain_name"/></strong>
+                                    will expire on <strong><t t-out="record.expiration_date" t-options='{"widget": "date"}'/></strong>.
+                                </p>
+                            </td>
+                        </tr>
+
+                        <!-- Domain Details -->
+                        <tr>
+                            <td style="padding: 20px 0;">
+                                <table width="100%" style="background-color: #f8f9fa; border-radius: 8px; border: 1px solid #dee2e6;">
+                                    <tr>
+                                        <td style="padding: 20px;">
+                                            <table width="100%">
+                                                <tr>
+                                                    <td width="35%" style="padding: 8px 0; color: #666; vertical-align: top;">Domain:</td>
+                                                    <td style="padding: 8px 0;"><strong><t t-out="record.domain_name"/></strong></td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding: 8px 0; color: #666; vertical-align: top;">Expiration:</td>
+                                                    <td style="padding: 8px 0;"><t t-out="record.expiration_date" t-options='{"widget": "date"}'/></td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding: 8px 0; color: #666; vertical-align: top;">Days Remaining:</td>
+                                                    <td style="padding: 8px 0;">
+                                                        <span style="background-color: #ffc107; color: #000; padding: 3px 10px; border-radius: 4px; font-weight: bold;">
+                                                            <t t-out="record.days_until_expiry"/> days
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding: 8px 0; color: #666; vertical-align: top;">Auto-Renew:</td>
+                                                    <td style="padding: 8px 0;">
+                                                        <t t-if="record.is_auto_renew or record.auto_renew">
+                                                            <span style="color: #28a745;">✓ Enabled</span>
+                                                        </t>
+                                                        <t t-else="">
+                                                            <span style="color: #dc3545;">✗ Disabled</span>
+                                                        </t>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+
+                        <!-- Warning if auto-renew disabled -->
+                        <tr t-if="not (record.is_auto_renew or record.auto_renew)">
+                            <td style="padding: 0 0 20px 0;">
+                                <div style="background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 8px; padding: 15px;">
+                                    <p style="margin: 0; color: #721c24;">
+                                        <strong>⚠️ Action Required:</strong> Auto-renewal is disabled for this domain.
+                                        Please renew manually to avoid losing your domain.
+                                    </p>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- CTA Button -->
+                        <tr>
+                            <td align="center" style="padding: 20px 0;">
+                                <a href="/my/domains"
+                                   style="background-color: #28a745; color: white; padding: 14px 35px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">
+                                    Renew Now
+                                </a>
+                            </td>
+                        </tr>
+
+                        <!-- Benefits reminder -->
+                        <tr>
+                            <td style="padding: 15px 0; border-top: 1px solid #dee2e6;">
+                                <p style="margin: 0 0 10px 0; font-weight: bold;">Why renew now?</p>
+                                <ul style="margin: 0; padding-left: 20px; color: #666;">
+                                    <li>Keep your online presence active</li>
+                                    <li>Protect your brand and SEO ranking</li>
+                                    <li>Avoid domain recovery fees</li>
+                                    <li>Maintain email service continuity</li>
+                                </ul>
+                            </td>
+                        </tr>
+
+                        <!-- Signature -->
+                        <tr>
+                            <td style="padding: 20px 0 0 0;">
+                                <p style="margin: 0;">Best regards,<br/>
+                                <strong><t t-out="company.name"/></strong></p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    </table>
+</t>
             </field>
             <field name="lang">{{ object.partner_id.lang }}</field>
             <field name="auto_delete" eval="True"/>
+        </record>
+
+        <!-- Domain Expiry Notification - 7 Days (Urgent) -->
+        <record id="mail_template_domain_expiry_7" model="mail.template">
+            <field name="name">ResellerClub: Domain Expiry URGENT (7 Days)</field>
+            <field name="model_id" ref="model_resellerclub_domain"/>
+            <field name="email_from">{{ (object.company_id.email_formatted or object.company_id.email or user.email_formatted) }}</field>
+            <field name="email_to">{{ object.partner_id.email_formatted or object.partner_id.email }}</field>
+            <field name="partner_to">{{ object.partner_id.id }}</field>
+            <field name="subject">🚨 URGENT: Domain {{ object.domain_name }} expires in {{ object.days_until_expiry }} days!</field>
+            <field name="description">Urgent notification 7 days before domain expiration</field>
+            <field name="body_html" type="html">
+<t t-set="record" t-value="object"/>
+<t t-call="mail.mail_notification_layout">
+    <t t-set="company" t-value="record.company_id"/>
+
+    <table border="0" cellpadding="0" cellspacing="0" style="padding-top: 16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; color: #454748; width: 100%; border-collapse:separate;">
+        <tr>
+            <td align="center">
+                <table border="0" cellpadding="0" cellspacing="0" width="590" style="padding: 16px; background-color: white; color: #454748; border-collapse:separate;">
+                    <tbody>
+                        <!-- URGENT Alert Header -->
+                        <tr>
+                            <td style="background-color: #dc3545; border-radius: 8px; padding: 25px; text-align: center;">
+                                <h2 style="color: white; margin: 0;">🚨 URGENT: Domain Expiring Soon!</h2>
+                                <p style="margin: 10px 0 0 0; color: white; font-size: 18px;">
+                                    Only <strong><t t-out="record.days_until_expiry"/> days</strong> remaining
+                                </p>
+                            </td>
+                        </tr>
+
+                        <!-- Greeting -->
+                        <tr>
+                            <td style="padding: 20px 0 10px 0;">
+                                <p style="margin: 0;">Dear <t t-out="record.partner_id.name or 'Valued Customer'"/>,</p>
+                            </td>
+                        </tr>
+
+                        <!-- Urgent Message -->
+                        <tr>
+                            <td style="padding: 10px 0;">
+                                <p style="margin: 0; font-size: 16px;">
+                                    <strong>Your domain <t t-out="record.domain_name"/> is about to expire!</strong>
+                                </p>
+                                <p style="margin: 10px 0 0 0;">
+                                    If not renewed by <strong><t t-out="record.expiration_date" t-options='{"widget": "date"}'/></strong>,
+                                    your domain will become unavailable and may be purchased by someone else.
+                                </p>
+                            </td>
+                        </tr>
+
+                        <!-- Countdown Box -->
+                        <tr>
+                            <td align="center" style="padding: 25px 0;">
+                                <div style="background-color: #f8d7da; border: 2px solid #dc3545; border-radius: 8px; padding: 20px; display: inline-block;">
+                                    <span style="font-size: 48px; font-weight: bold; color: #dc3545;">
+                                        <t t-out="record.days_until_expiry"/>
+                                    </span>
+                                    <br/>
+                                    <span style="color: #dc3545; font-weight: bold;">DAYS LEFT</span>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- CTA Buttons -->
+                        <tr>
+                            <td align="center" style="padding: 20px 0;">
+                                <a href="/my/domains"
+                                   style="background-color: #dc3545; color: white; padding: 16px 40px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold; font-size: 16px;">
+                                    RENEW NOW
+                                </a>
+                            </td>
+                        </tr>
+
+                        <!-- Consequences Warning -->
+                        <tr>
+                            <td style="padding: 20px 0; border-top: 1px solid #dee2e6;">
+                                <p style="margin: 0 0 10px 0; font-weight: bold; color: #dc3545;">What happens if you don't renew?</p>
+                                <ul style="margin: 0; padding-left: 20px; color: #666;">
+                                    <li>Your website will go offline</li>
+                                    <li>Email addresses will stop working</li>
+                                    <li>Your domain may be purchased by someone else</li>
+                                    <li>Recovery fees can be significantly higher</li>
+                                </ul>
+                            </td>
+                        </tr>
+
+                        <!-- Signature -->
+                        <tr>
+                            <td style="padding: 20px 0 0 0;">
+                                <p style="margin: 0;">Best regards,<br/>
+                                <strong><t t-out="company.name"/></strong></p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    </table>
+</t>
+            </field>
+            <field name="lang">{{ object.partner_id.lang }}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+
+        <!-- Domain Renewal Confirmation -->
+        <record id="mail_template_domain_renewed" model="mail.template">
+            <field name="name">ResellerClub: Domain Renewal Confirmation</field>
+            <field name="model_id" ref="model_resellerclub_domain"/>
+            <field name="email_from">{{ (object.company_id.email_formatted or object.company_id.email or user.email_formatted) }}</field>
+            <field name="email_to">{{ object.partner_id.email_formatted or object.partner_id.email }}</field>
+            <field name="partner_to">{{ object.partner_id.id }}</field>
+            <field name="subject">✅ Domain Renewed: {{ object.domain_name }}</field>
+            <field name="description">Sent when a domain is successfully renewed</field>
+            <field name="body_html" type="html">
+<t t-set="record" t-value="object"/>
+<t t-call="mail.mail_notification_layout">
+    <t t-set="company" t-value="record.company_id"/>
+
+    <table border="0" cellpadding="0" cellspacing="0" style="padding-top: 16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; color: #454748; width: 100%; border-collapse:separate;">
+        <tr>
+            <td align="center">
+                <table border="0" cellpadding="0" cellspacing="0" width="590" style="padding: 16px; background-color: white; color: #454748; border-collapse:separate;">
+                    <tbody>
+                        <!-- Success Header -->
+                        <tr>
+                            <td style="background-color: #d4edda; border: 1px solid #c3e6cb; border-radius: 8px; padding: 25px; text-align: center;">
+                                <h2 style="color: #155724; margin: 0;">✅ Domain Renewed Successfully!</h2>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="padding: 20px 0 10px 0;">
+                                <p style="margin: 0;">Dear <t t-out="record.partner_id.name or 'Valued Customer'"/>,</p>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="padding: 10px 0;">
+                                <p style="margin: 0;">
+                                    Great news! Your domain <strong><t t-out="record.domain_name"/></strong> has been successfully renewed.
+                                </p>
+                            </td>
+                        </tr>
+
+                        <!-- Domain Details -->
+                        <tr>
+                            <td style="padding: 20px 0;">
+                                <table width="100%" style="background-color: #f8f9fa; border-radius: 8px; border: 1px solid #dee2e6;">
+                                    <tr>
+                                        <td style="padding: 20px;">
+                                            <table width="100%">
+                                                <tr>
+                                                    <td width="40%" style="padding: 8px 0; color: #666;">Domain:</td>
+                                                    <td style="padding: 8px 0;"><strong><t t-out="record.domain_name"/></strong></td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding: 8px 0; color: #666;">New Expiration:</td>
+                                                    <td style="padding: 8px 0;"><t t-out="record.expiration_date" t-options='{"widget": "date"}'/></td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding: 8px 0; color: #666;">Last Renewal:</td>
+                                                    <td style="padding: 8px 0;"><t t-out="record.last_renewal_date" t-options='{"widget": "date"}'/></td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td align="center" style="padding: 20px 0;">
+                                <a href="/my/domains"
+                                   style="background-color: #875A7B; color: white; padding: 14px 35px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">
+                                    View Domain Details
+                                </a>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="padding: 20px 0 0 0;">
+                                <p style="margin: 0;">Thank you for your continued trust!<br/><br/>
+                                Best regards,<br/>
+                                <strong><t t-out="company.name"/></strong></p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    </table>
+</t>
+            </field>
+            <field name="lang">{{ object.partner_id.lang }}</field>
+            <field name="auto_delete" eval="False"/>
+        </record>
+
+        <!-- ======================== -->
+        <!-- SSL EMAIL TEMPLATES -->
+        <!-- ======================== -->
+
+        <!-- SSL Certificate Issued -->
+        <record id="mail_template_ssl_issued" model="mail.template">
+            <field name="name">ResellerClub: SSL Certificate Issued</field>
+            <field name="model_id" ref="model_resellerclub_ssl"/>
+            <field name="email_from">{{ (object.company_id.email_formatted or object.company_id.email or user.email_formatted) }}</field>
+            <field name="email_to">{{ object.partner_id.email_formatted or object.partner_id.email }}</field>
+            <field name="partner_to">{{ object.partner_id.id }}</field>
+            <field name="subject">🔒 SSL Certificate Issued: {{ object.domain_name }}</field>
+            <field name="description">Sent when SSL certificate is successfully issued</field>
+            <field name="body_html" type="html">
+<t t-set="record" t-value="object"/>
+<t t-call="mail.mail_notification_layout">
+    <t t-set="company" t-value="record.company_id"/>
+
+    <table border="0" cellpadding="0" cellspacing="0" style="padding-top: 16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; color: #454748; width: 100%; border-collapse:separate;">
+        <tr>
+            <td align="center">
+                <table border="0" cellpadding="0" cellspacing="0" width="590" style="padding: 16px; background-color: white; color: #454748; border-collapse:separate;">
+                    <tbody>
+                        <tr>
+                            <td style="background-color: #d4edda; border: 1px solid #c3e6cb; border-radius: 8px; padding: 25px; text-align: center;">
+                                <h2 style="color: #155724; margin: 0;">🔒 SSL Certificate Issued!</h2>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="padding: 20px 0 10px 0;">
+                                <p style="margin: 0;">Dear <t t-out="record.partner_id.name or 'Valued Customer'"/>,</p>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="padding: 10px 0;">
+                                <p style="margin: 0;">
+                                    Your SSL certificate for <strong><t t-out="record.domain_name"/></strong> has been issued and is ready to be installed.
+                                </p>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="padding: 20px 0;">
+                                <table width="100%" style="background-color: #f8f9fa; border-radius: 8px; border: 1px solid #dee2e6;">
+                                    <tr>
+                                        <td style="padding: 20px;">
+                                            <table width="100%">
+                                                <tr>
+                                                    <td width="40%" style="padding: 8px 0; color: #666;">Domain:</td>
+                                                    <td style="padding: 8px 0;"><strong><t t-out="record.domain_name"/></strong></td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding: 8px 0; color: #666;">Certificate Type:</td>
+                                                    <td style="padding: 8px 0;"><t t-out="record.ssl_type"/></td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding: 8px 0; color: #666;">Brand:</td>
+                                                    <td style="padding: 8px 0;"><t t-out="record.brand"/></td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding: 8px 0; color: #666;">Valid Until:</td>
+                                                    <td style="padding: 8px 0;"><t t-out="record.expiration_date" t-options='{"widget": "date"}'/></td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="padding: 15px 0; background-color: #e7f3ff; border-radius: 8px; padding: 15px;">
+                                <p style="margin: 0; color: #004085;">
+                                    <strong>📋 Next Steps:</strong><br/>
+                                    1. Download your certificate from the portal<br/>
+                                    2. Install it on your web server<br/>
+                                    3. Configure your site to use HTTPS
+                                </p>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td align="center" style="padding: 25px 0;">
+                                <a href="/my/ssl"
+                                   style="background-color: #28a745; color: white; padding: 14px 35px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">
+                                    Download Certificate
+                                </a>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="padding: 20px 0 0 0;">
+                                <p style="margin: 0;">Best regards,<br/>
+                                <strong><t t-out="company.name"/></strong></p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    </table>
+</t>
+            </field>
+            <field name="lang">{{ object.partner_id.lang }}</field>
+            <field name="auto_delete" eval="False"/>
         </record>
 
         <!-- SSL Expiry Notification -->
         <record id="mail_template_ssl_expiry" model="mail.template">
             <field name="name">ResellerClub: SSL Expiry Reminder</field>
             <field name="model_id" ref="model_resellerclub_ssl"/>
-            <field name="email_from">{{ (object.company_id.email or user.email_formatted) }}</field>
-            <field name="email_to">{{ object.partner_id.email }}</field>
-            <field name="subject">SSL Certificate Expiry Reminder: {{ object.domain_name }}</field>
+            <field name="email_from">{{ (object.company_id.email_formatted or object.company_id.email or user.email_formatted) }}</field>
+            <field name="email_to">{{ object.partner_id.email_formatted or object.partner_id.email }}</field>
+            <field name="partner_to">{{ object.partner_id.id }}</field>
+            <field name="subject">🔓 SSL Certificate Expiring: {{ object.domain_name }} ({{ object.days_until_expiry }} days)</field>
+            <field name="description">Sent before SSL certificate expiration</field>
             <field name="body_html" type="html">
-<div style="margin: 0px; padding: 0px; font-family: Arial, Helvetica, sans-serif;">
-    <table style="width: 100%; max-width: 600px; margin: auto; border-collapse: collapse;">
+<t t-set="record" t-value="object"/>
+<t t-call="mail.mail_notification_layout">
+    <t t-set="company" t-value="record.company_id"/>
+
+    <table border="0" cellpadding="0" cellspacing="0" style="padding-top: 16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; color: #454748; width: 100%; border-collapse:separate;">
         <tr>
-            <td style="padding: 20px; background-color: #28a745; text-align: center;">
-                <h1 style="color: white; margin: 0;">SSL Certificate Expiry Reminder</h1>
-            </td>
-        </tr>
-        <tr>
-            <td style="padding: 30px; background-color: #f9f9f9;">
-                <p>Dear {{ object.partner_id.name }},</p>
+            <td align="center">
+                <table border="0" cellpadding="0" cellspacing="0" width="590" style="padding: 16px; background-color: white; color: #454748; border-collapse:separate;">
+                    <tbody>
+                        <tr>
+                            <td style="background-color: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 20px; text-align: center;">
+                                <h2 style="color: #856404; margin: 0;">🔓 SSL Certificate Expiring Soon</h2>
+                                <p style="margin: 10px 0 0 0; color: #856404;">
+                                    <strong><t t-out="record.days_until_expiry"/> days</strong> until expiration
+                                </p>
+                            </td>
+                        </tr>
 
-                <p>This is a reminder that your SSL certificate for <strong>{{ object.domain_name }}</strong> will expire on <strong>{{ object.expiration_date }}</strong>.</p>
+                        <tr>
+                            <td style="padding: 20px 0 10px 0;">
+                                <p style="margin: 0;">Dear <t t-out="record.partner_id.name or 'Valued Customer'"/>,</p>
+                            </td>
+                        </tr>
 
-                <div style="background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 4px; padding: 15px; margin: 20px 0;">
-                    <p style="margin: 0;"><strong>Domain:</strong> {{ object.domain_name }}</p>
-                    <p style="margin: 5px 0 0 0;"><strong>Certificate Type:</strong> {{ object.ssl_type }}</p>
-                    <p style="margin: 5px 0 0 0;"><strong>Expiration Date:</strong> {{ object.expiration_date }}</p>
-                    <p style="margin: 5px 0 0 0;"><strong>Days Remaining:</strong> {{ object.days_until_expiry }} days</p>
-                </div>
+                        <tr>
+                            <td style="padding: 10px 0;">
+                                <p style="margin: 0;">
+                                    Your SSL certificate for <strong><t t-out="record.domain_name"/></strong> will expire on
+                                    <strong><t t-out="record.expiration_date" t-options='{"widget": "date"}'/></strong>.
+                                </p>
+                            </td>
+                        </tr>
 
-                <p><strong>Important:</strong> An expired SSL certificate will cause security warnings for your website visitors. Please renew it before the expiration date.</p>
+                        <tr>
+                            <td style="padding: 20px 0;">
+                                <table width="100%" style="background-color: #f8f9fa; border-radius: 8px; border: 1px solid #dee2e6;">
+                                    <tr>
+                                        <td style="padding: 20px;">
+                                            <table width="100%">
+                                                <tr>
+                                                    <td width="40%" style="padding: 8px 0; color: #666;">Domain:</td>
+                                                    <td style="padding: 8px 0;"><strong><t t-out="record.domain_name"/></strong></td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding: 8px 0; color: #666;">Certificate Type:</td>
+                                                    <td style="padding: 8px 0;"><t t-out="record.ssl_type"/></td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding: 8px 0; color: #666;">Expiration Date:</td>
+                                                    <td style="padding: 8px 0;"><t t-out="record.expiration_date" t-options='{"widget": "date"}'/></td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding: 8px 0; color: #666;">Days Remaining:</td>
+                                                    <td style="padding: 8px 0;">
+                                                        <span style="background-color: #ffc107; color: #000; padding: 3px 10px; border-radius: 4px; font-weight: bold;">
+                                                            <t t-out="record.days_until_expiry"/> days
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
 
-                <p style="text-align: center; margin: 30px 0;">
-                    <a href="/my/ssl" style="background-color: #28a745; color: white; padding: 12px 30px; text-decoration: none; border-radius: 4px; display: inline-block;">Renew SSL Certificate</a>
-                </p>
+                        <tr>
+                            <td style="padding: 0 0 20px 0;">
+                                <div style="background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 8px; padding: 15px;">
+                                    <p style="margin: 0; color: #721c24;">
+                                        <strong>⚠️ Important:</strong> An expired SSL certificate will cause browsers to show security warnings to your visitors, potentially harming your reputation and SEO.
+                                    </p>
+                                </div>
+                            </td>
+                        </tr>
 
-                <p>If you have any questions, please don't hesitate to contact us.</p>
+                        <tr>
+                            <td align="center" style="padding: 20px 0;">
+                                <a href="/my/ssl"
+                                   style="background-color: #28a745; color: white; padding: 14px 35px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">
+                                    Renew SSL Certificate
+                                </a>
+                            </td>
+                        </tr>
 
-                <p>Best regards,<br/>
-                {{ object.company_id.name }}</p>
-            </td>
-        </tr>
-        <tr>
-            <td style="padding: 15px; background-color: #eeeeee; text-align: center; font-size: 12px; color: #666;">
-                <p style="margin: 0;">This is an automated message from {{ object.company_id.name }}</p>
+                        <tr>
+                            <td style="padding: 20px 0 0 0;">
+                                <p style="margin: 0;">Best regards,<br/>
+                                <strong><t t-out="company.name"/></strong></p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </td>
         </tr>
     </table>
-</div>
+</t>
             </field>
             <field name="lang">{{ object.partner_id.lang }}</field>
             <field name="auto_delete" eval="True"/>
+        </record>
+
+        <!-- ========================== -->
+        <!-- HOSTING EMAIL TEMPLATES -->
+        <!-- ========================== -->
+
+        <!-- Hosting Account Created -->
+        <record id="mail_template_hosting_created" model="mail.template">
+            <field name="name">ResellerClub: Hosting Account Created</field>
+            <field name="model_id" ref="model_resellerclub_hosting"/>
+            <field name="email_from">{{ (object.company_id.email_formatted or object.company_id.email or user.email_formatted) }}</field>
+            <field name="email_to">{{ object.partner_id.email_formatted or object.partner_id.email }}</field>
+            <field name="partner_to">{{ object.partner_id.id }}</field>
+            <field name="subject">🖥️ Hosting Account Ready: {{ object.domain_name }}</field>
+            <field name="description">Sent when hosting account is provisioned</field>
+            <field name="body_html" type="html">
+<t t-set="record" t-value="object"/>
+<t t-call="mail.mail_notification_layout">
+    <t t-set="company" t-value="record.company_id"/>
+
+    <table border="0" cellpadding="0" cellspacing="0" style="padding-top: 16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; color: #454748; width: 100%; border-collapse:separate;">
+        <tr>
+            <td align="center">
+                <table border="0" cellpadding="0" cellspacing="0" width="590" style="padding: 16px; background-color: white; color: #454748; border-collapse:separate;">
+                    <tbody>
+                        <tr>
+                            <td style="background-color: #d4edda; border: 1px solid #c3e6cb; border-radius: 8px; padding: 25px; text-align: center;">
+                                <h2 style="color: #155724; margin: 0;">🖥️ Your Hosting is Ready!</h2>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="padding: 20px 0 10px 0;">
+                                <p style="margin: 0;">Dear <t t-out="record.partner_id.name or 'Valued Customer'"/>,</p>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="padding: 10px 0;">
+                                <p style="margin: 0;">
+                                    Your hosting account for <strong><t t-out="record.domain_name"/></strong> has been set up and is ready to use.
+                                </p>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="padding: 20px 0;">
+                                <table width="100%" style="background-color: #f8f9fa; border-radius: 8px; border: 1px solid #dee2e6;">
+                                    <tr>
+                                        <td style="padding: 20px;">
+                                            <h4 style="margin: 0 0 15px 0; color: #875A7B;">Account Details</h4>
+                                            <table width="100%">
+                                                <tr>
+                                                    <td width="40%" style="padding: 8px 0; color: #666;">Domain:</td>
+                                                    <td style="padding: 8px 0;"><strong><t t-out="record.domain_name"/></strong></td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding: 8px 0; color: #666;">Hosting Type:</td>
+                                                    <td style="padding: 8px 0;"><t t-out="record.hosting_type"/></td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding: 8px 0; color: #666;">Plan:</td>
+                                                    <td style="padding: 8px 0;"><t t-out="record.plan_name"/></td>
+                                                </tr>
+                                                <tr t-if="record.disk_space">
+                                                    <td style="padding: 8px 0; color: #666;">Disk Space:</td>
+                                                    <td style="padding: 8px 0;"><t t-out="record.disk_space"/></td>
+                                                </tr>
+                                                <tr t-if="record.bandwidth">
+                                                    <td style="padding: 8px 0; color: #666;">Bandwidth:</td>
+                                                    <td style="padding: 8px 0;"><t t-out="record.bandwidth"/></td>
+                                                </tr>
+                                                <tr t-if="record.cpanel_url">
+                                                    <td style="padding: 8px 0; color: #666;">Control Panel:</td>
+                                                    <td style="padding: 8px 0;">
+                                                        <a t-att-href="record.cpanel_url" style="color: #875A7B;">Access cPanel</a>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="padding: 15px 0; background-color: #e7f3ff; border-radius: 8px; padding: 15px;">
+                                <p style="margin: 0; color: #004085;">
+                                    <strong>📋 Getting Started:</strong><br/>
+                                    1. Log into your control panel<br/>
+                                    2. Upload your website files<br/>
+                                    3. Configure your email accounts<br/>
+                                    4. Set up your databases if needed
+                                </p>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td align="center" style="padding: 25px 0;">
+                                <a href="/my/hosting"
+                                   style="background-color: #17a2b8; color: white; padding: 14px 35px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">
+                                    Manage Hosting
+                                </a>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="padding: 20px 0 0 0;">
+                                <p style="margin: 0;">Best regards,<br/>
+                                <strong><t t-out="company.name"/></strong></p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    </table>
+</t>
+            </field>
+            <field name="lang">{{ object.partner_id.lang }}</field>
+            <field name="auto_delete" eval="False"/>
         </record>
 
         <!-- Hosting Expiry Notification -->
         <record id="mail_template_hosting_expiry" model="mail.template">
             <field name="name">ResellerClub: Hosting Expiry Reminder</field>
             <field name="model_id" ref="model_resellerclub_hosting"/>
-            <field name="email_from">{{ (object.company_id.email or user.email_formatted) }}</field>
-            <field name="email_to">{{ object.partner_id.email }}</field>
-            <field name="subject">Hosting Expiry Reminder: {{ object.domain_name }}</field>
+            <field name="email_from">{{ (object.company_id.email_formatted or object.company_id.email or user.email_formatted) }}</field>
+            <field name="email_to">{{ object.partner_id.email_formatted or object.partner_id.email }}</field>
+            <field name="partner_to">{{ object.partner_id.id }}</field>
+            <field name="subject">⏰ Hosting Expiring: {{ object.domain_name }} ({{ object.days_until_expiry }} days)</field>
+            <field name="description">Sent before hosting expiration</field>
             <field name="body_html" type="html">
-<div style="margin: 0px; padding: 0px; font-family: Arial, Helvetica, sans-serif;">
-    <table style="width: 100%; max-width: 600px; margin: auto; border-collapse: collapse;">
+<t t-set="record" t-value="object"/>
+<t t-call="mail.mail_notification_layout">
+    <t t-set="company" t-value="record.company_id"/>
+
+    <table border="0" cellpadding="0" cellspacing="0" style="padding-top: 16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; color: #454748; width: 100%; border-collapse:separate;">
         <tr>
-            <td style="padding: 20px; background-color: #17a2b8; text-align: center;">
-                <h1 style="color: white; margin: 0;">Hosting Expiry Reminder</h1>
-            </td>
-        </tr>
-        <tr>
-            <td style="padding: 30px; background-color: #f9f9f9;">
-                <p>Dear {{ object.partner_id.name }},</p>
+            <td align="center">
+                <table border="0" cellpadding="0" cellspacing="0" width="590" style="padding: 16px; background-color: white; color: #454748; border-collapse:separate;">
+                    <tbody>
+                        <tr>
+                            <td style="background-color: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 20px; text-align: center;">
+                                <h2 style="color: #856404; margin: 0;">⏰ Hosting Expiration Reminder</h2>
+                                <p style="margin: 10px 0 0 0; color: #856404;">
+                                    <strong><t t-out="record.days_until_expiry"/> days</strong> remaining
+                                </p>
+                            </td>
+                        </tr>
 
-                <p>This is a reminder that your hosting plan for <strong>{{ object.domain_name }}</strong> will expire on <strong>{{ object.expiration_date }}</strong>.</p>
+                        <tr>
+                            <td style="padding: 20px 0 10px 0;">
+                                <p style="margin: 0;">Dear <t t-out="record.partner_id.name or 'Valued Customer'"/>,</p>
+                            </td>
+                        </tr>
 
-                <div style="background-color: #d1ecf1; border: 1px solid #bee5eb; border-radius: 4px; padding: 15px; margin: 20px 0;">
-                    <p style="margin: 0;"><strong>Domain:</strong> {{ object.domain_name }}</p>
-                    <p style="margin: 5px 0 0 0;"><strong>Plan:</strong> {{ object.plan_name }}</p>
-                    <p style="margin: 5px 0 0 0;"><strong>Expiration Date:</strong> {{ object.expiration_date }}</p>
-                    <p style="margin: 5px 0 0 0;"><strong>Days Remaining:</strong> {{ object.days_until_expiry }} days</p>
-                </div>
+                        <tr>
+                            <td style="padding: 10px 0;">
+                                <p style="margin: 0;">
+                                    Your hosting plan for <strong><t t-out="record.domain_name"/></strong> will expire on
+                                    <strong><t t-out="record.expiration_date" t-options='{"widget": "date"}'/></strong>.
+                                </p>
+                            </td>
+                        </tr>
 
-                <p>To avoid service interruption, please renew your hosting plan before the expiration date.</p>
+                        <tr>
+                            <td style="padding: 20px 0;">
+                                <table width="100%" style="background-color: #f8f9fa; border-radius: 8px; border: 1px solid #dee2e6;">
+                                    <tr>
+                                        <td style="padding: 20px;">
+                                            <table width="100%">
+                                                <tr>
+                                                    <td width="40%" style="padding: 8px 0; color: #666;">Domain:</td>
+                                                    <td style="padding: 8px 0;"><strong><t t-out="record.domain_name"/></strong></td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding: 8px 0; color: #666;">Plan:</td>
+                                                    <td style="padding: 8px 0;"><t t-out="record.plan_name"/></td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding: 8px 0; color: #666;">Expiration Date:</td>
+                                                    <td style="padding: 8px 0;"><t t-out="record.expiration_date" t-options='{"widget": "date"}'/></td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding: 8px 0; color: #666;">Days Remaining:</td>
+                                                    <td style="padding: 8px 0;">
+                                                        <span style="background-color: #ffc107; color: #000; padding: 3px 10px; border-radius: 4px; font-weight: bold;">
+                                                            <t t-out="record.days_until_expiry"/> days
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding: 8px 0; color: #666;">Auto-Renew:</td>
+                                                    <td style="padding: 8px 0;">
+                                                        <t t-if="record.auto_renew">
+                                                            <span style="color: #28a745;">✓ Enabled</span>
+                                                        </t>
+                                                        <t t-else="">
+                                                            <span style="color: #dc3545;">✗ Disabled</span>
+                                                        </t>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
 
-                <p style="text-align: center; margin: 30px 0;">
-                    <a href="/my/hosting" style="background-color: #17a2b8; color: white; padding: 12px 30px; text-decoration: none; border-radius: 4px; display: inline-block;">Renew Hosting</a>
-                </p>
+                        <tr t-if="not record.auto_renew">
+                            <td style="padding: 0 0 20px 0;">
+                                <div style="background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 8px; padding: 15px;">
+                                    <p style="margin: 0; color: #721c24;">
+                                        <strong>⚠️ Action Required:</strong> Auto-renewal is disabled. Please renew manually to avoid service interruption.
+                                    </p>
+                                </div>
+                            </td>
+                        </tr>
 
-                <p>If you have any questions, please don't hesitate to contact us.</p>
+                        <tr>
+                            <td align="center" style="padding: 20px 0;">
+                                <a href="/my/hosting"
+                                   style="background-color: #17a2b8; color: white; padding: 14px 35px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">
+                                    Renew Hosting
+                                </a>
+                            </td>
+                        </tr>
 
-                <p>Best regards,<br/>
-                {{ object.company_id.name }}</p>
-            </td>
-        </tr>
-        <tr>
-            <td style="padding: 15px; background-color: #eeeeee; text-align: center; font-size: 12px; color: #666;">
-                <p style="margin: 0;">This is an automated message from {{ object.company_id.name }}</p>
+                        <tr>
+                            <td style="padding: 15px 0; border-top: 1px solid #dee2e6;">
+                                <p style="margin: 0 0 10px 0; font-weight: bold;">What happens if hosting expires?</p>
+                                <ul style="margin: 0; padding-left: 20px; color: #666;">
+                                    <li>Your website will go offline</li>
+                                    <li>Email service will be interrupted</li>
+                                    <li>Data may be deleted after grace period</li>
+                                </ul>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="padding: 20px 0 0 0;">
+                                <p style="margin: 0;">Best regards,<br/>
+                                <strong><t t-out="company.name"/></strong></p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </td>
         </tr>
     </table>
-</div>
+</t>
             </field>
             <field name="lang">{{ object.partner_id.lang }}</field>
             <field name="auto_delete" eval="True"/>
         </record>
+
+        <!-- ============================== -->
+        <!-- SUBSCRIPTION EMAIL TEMPLATES -->
+        <!-- ============================== -->
+
+        <!-- Subscription Invoice Reminder -->
+        <record id="mail_template_subscription_invoice" model="mail.template">
+            <field name="name">ResellerClub: Subscription Invoice</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="email_from">{{ (object.company_id.email_formatted or object.company_id.email or user.email_formatted) }}</field>
+            <field name="email_to">{{ object.partner_id.email_formatted or object.partner_id.email }}</field>
+            <field name="partner_to">{{ object.partner_id.id }}</field>
+            <field name="subject">📋 Subscription Renewal: {{ object.name }}</field>
+            <field name="description">Sent for subscription renewals</field>
+            <field name="body_html" type="html">
+<t t-set="record" t-value="object"/>
+<t t-call="mail.mail_notification_layout">
+    <t t-set="company" t-value="record.company_id"/>
+
+    <table border="0" cellpadding="0" cellspacing="0" style="padding-top: 16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; color: #454748; width: 100%; border-collapse:separate;">
+        <tr>
+            <td align="center">
+                <table border="0" cellpadding="0" cellspacing="0" width="590" style="padding: 16px; background-color: white; color: #454748; border-collapse:separate;">
+                    <tbody>
+                        <tr>
+                            <td style="background-color: #e7f3ff; border: 1px solid #b8daff; border-radius: 8px; padding: 20px; text-align: center;">
+                                <h2 style="color: #004085; margin: 0;">📋 Subscription Renewal</h2>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="padding: 20px 0 10px 0;">
+                                <p style="margin: 0;">Dear <t t-out="record.partner_id.name or 'Valued Customer'"/>,</p>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="padding: 10px 0;">
+                                <p style="margin: 0;">
+                                    Your subscription <strong><t t-out="record.name"/></strong> is due for renewal.
+                                </p>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="padding: 20px 0;">
+                                <table width="100%" style="background-color: #f8f9fa; border-radius: 8px; border: 1px solid #dee2e6;">
+                                    <tr>
+                                        <td style="padding: 20px;">
+                                            <h4 style="margin: 0 0 15px 0; color: #875A7B;">Subscription Details</h4>
+                                            <table width="100%">
+                                                <tr>
+                                                    <td width="40%" style="padding: 8px 0; color: #666;">Reference:</td>
+                                                    <td style="padding: 8px 0;"><strong><t t-out="record.name"/></strong></td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding: 8px 0; color: #666;">Next Invoice:</td>
+                                                    <td style="padding: 8px 0;"><t t-out="record.next_invoice_date" t-options='{"widget": "date"}'/></td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding: 8px 0; color: #666;">Amount:</td>
+                                                    <td style="padding: 8px 0;"><t t-out="record.amount_total" t-options='{"widget": "monetary", "display_currency": record.currency_id}'/></td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+
+                        <!-- Services included -->
+                        <tr t-if="record.rc_services_count > 0">
+                            <td style="padding: 15px 0;">
+                                <p style="margin: 0 0 10px 0;"><strong>Services Included:</strong></p>
+                                <ul style="margin: 0; padding-left: 20px; color: #666;">
+                                    <t t-foreach="record.rc_domain_ids[:3]" t-as="domain">
+                                        <li>Domain: <t t-out="domain.domain_name"/></li>
+                                    </t>
+                                    <t t-foreach="record.rc_hosting_ids[:3]" t-as="hosting">
+                                        <li>Hosting: <t t-out="hosting.domain_name"/></li>
+                                    </t>
+                                    <t t-foreach="record.rc_ssl_ids[:3]" t-as="ssl">
+                                        <li>SSL: <t t-out="ssl.domain_name"/></li>
+                                    </t>
+                                </ul>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td align="center" style="padding: 25px 0;">
+                                <a t-att-href="'/my/orders/%d' % record.id"
+                                   style="background-color: #875A7B; color: white; padding: 14px 35px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">
+                                    View Subscription
+                                </a>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="padding: 20px 0 0 0;">
+                                <p style="margin: 0;">Best regards,<br/>
+                                <strong><t t-out="company.name"/></strong></p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    </table>
+</t>
+            </field>
+            <field name="lang">{{ object.partner_id.lang }}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+
+        <!-- Customer Welcome Email -->
+        <record id="mail_template_customer_welcome" model="mail.template">
+            <field name="name">ResellerClub: Welcome New Customer</field>
+            <field name="model_id" ref="model_resellerclub_customer"/>
+            <field name="email_from">{{ (object.company_id.email_formatted or object.company_id.email or user.email_formatted) }}</field>
+            <field name="email_to">{{ object.partner_id.email_formatted or object.partner_id.email }}</field>
+            <field name="partner_to">{{ object.partner_id.id }}</field>
+            <field name="subject">👋 Welcome to {{ object.company_id.name }}!</field>
+            <field name="description">Sent to new ResellerClub customers</field>
+            <field name="body_html" type="html">
+<t t-set="record" t-value="object"/>
+<t t-call="mail.mail_notification_layout">
+    <t t-set="company" t-value="record.company_id"/>
+
+    <table border="0" cellpadding="0" cellspacing="0" style="padding-top: 16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; color: #454748; width: 100%; border-collapse:separate;">
+        <tr>
+            <td align="center">
+                <table border="0" cellpadding="0" cellspacing="0" width="590" style="padding: 16px; background-color: white; color: #454748; border-collapse:separate;">
+                    <tbody>
+                        <tr>
+                            <td style="background-color: #875A7B; border-radius: 8px; padding: 30px; text-align: center;">
+                                <h1 style="color: white; margin: 0;">Welcome!</h1>
+                                <p style="color: white; margin: 10px 0 0 0; opacity: 0.9;">
+                                    We're excited to have you on board
+                                </p>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="padding: 25px 0 10px 0;">
+                                <p style="margin: 0; font-size: 16px;">Dear <t t-out="record.partner_id.name or 'Valued Customer'"/>,</p>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="padding: 10px 0;">
+                                <p style="margin: 0;">
+                                    Thank you for choosing <strong><t t-out="company.name"/></strong>! Your account has been created successfully
+                                    and you're ready to start managing your domains, hosting, and SSL certificates.
+                                </p>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="padding: 25px 0;">
+                                <table width="100%">
+                                    <tr>
+                                        <td width="33%" style="text-align: center; padding: 15px;">
+                                            <div style="font-size: 40px;">🌐</div>
+                                            <p style="margin: 10px 0 0 0; font-weight: bold;">Domains</p>
+                                            <p style="margin: 5px 0 0 0; font-size: 13px; color: #666;">Register &amp; manage</p>
+                                        </td>
+                                        <td width="33%" style="text-align: center; padding: 15px;">
+                                            <div style="font-size: 40px;">🖥️</div>
+                                            <p style="margin: 10px 0 0 0; font-weight: bold;">Hosting</p>
+                                            <p style="margin: 5px 0 0 0; font-size: 13px; color: #666;">Fast &amp; reliable</p>
+                                        </td>
+                                        <td width="33%" style="text-align: center; padding: 15px;">
+                                            <div style="font-size: 40px;">🔒</div>
+                                            <p style="margin: 10px 0 0 0; font-weight: bold;">SSL</p>
+                                            <p style="margin: 5px 0 0 0; font-size: 13px; color: #666;">Secure your site</p>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="padding: 20px 0; background-color: #f8f9fa; border-radius: 8px;">
+                                <table width="100%" style="padding: 0 20px;">
+                                    <tr>
+                                        <td>
+                                            <h4 style="margin: 0 0 15px 0; color: #875A7B;">Getting Started:</h4>
+                                            <ol style="margin: 0; padding-left: 20px; color: #666;">
+                                                <li style="margin-bottom: 8px;">Access your <a href="/my/home" style="color: #875A7B;">customer portal</a></li>
+                                                <li style="margin-bottom: 8px;">Search for your perfect domain name</li>
+                                                <li style="margin-bottom: 8px;">Choose a hosting plan that fits your needs</li>
+                                                <li>Secure your site with an SSL certificate</li>
+                                            </ol>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td align="center" style="padding: 30px 0;">
+                                <a href="/my/home"
+                                   style="background-color: #875A7B; color: white; padding: 14px 40px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">
+                                    Go to My Portal
+                                </a>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="padding: 15px 0; border-top: 1px solid #dee2e6;">
+                                <p style="margin: 0; color: #666; font-size: 13px;">
+                                    <strong>Need help?</strong> Our support team is here for you.
+                                    Visit our <a href="/help" style="color: #875A7B;">Help Center</a> or contact us anytime.
+                                </p>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="padding: 20px 0 0 0;">
+                                <p style="margin: 0;">Welcome aboard!<br/><br/>
+                                The <strong><t t-out="company.name"/></strong> Team</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    </table>
+</t>
+            </field>
+            <field name="lang">{{ object.partner_id.lang }}</field>
+            <field name="auto_delete" eval="False"/>
+        </record>
+
     </data>
 </odoo>

@@ -1,0 +1,691 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Website Templates for ResellerClub Integration
+        Includes domain search, product pages, and checkout customizations
+    -->
+
+    <!-- ================================= -->
+    <!-- DOMAIN SEARCH PAGE -->
+    <!-- ================================= -->
+
+    <template id="domain_search_page" name="Domain Search">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+                <!-- Hero Section -->
+                <section class="s_banner pt-5 pb-5 bg-primary text-white">
+                    <div class="container">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-8 text-center">
+                                <h1 class="display-4 fw-bold">Find Your Perfect Domain</h1>
+                                <p class="lead mb-4">Search for available domain names and register them instantly</p>
+
+                                <!-- Domain Search Form -->
+                                <div class="domain-search-box bg-white rounded-3 p-4 shadow">
+                                    <form id="domain-search-form" class="row g-2">
+                                        <div class="col-md-8">
+                                            <div class="input-group input-group-lg">
+                                                <span class="input-group-text bg-white">
+                                                    <i class="fa fa-globe text-primary"></i>
+                                                </span>
+                                                <input type="text" id="domain-search-input"
+                                                       class="form-control border-start-0"
+                                                       placeholder="Enter your domain name"
+                                                       t-att-value="search_query"
+                                                       autocomplete="off"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <button type="submit" class="btn btn-primary btn-lg w-100">
+                                                <i class="fa fa-search me-2"></i>Search
+                                            </button>
+                                        </div>
+                                    </form>
+
+                                    <!-- TLD Quick Select -->
+                                    <div class="tld-quick-select mt-3 text-muted">
+                                        <small>Popular extensions:</small>
+                                        <t t-foreach="featured_tlds" t-as="tld">
+                                            <button type="button" class="btn btn-sm btn-outline-secondary ms-1 tld-btn"
+                                                    t-att-data-tld="tld">
+                                                .<t t-esc="tld"/>
+                                            </button>
+                                        </t>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Search Results Section -->
+                <section class="domain-results py-5" id="search-results" style="display: none;">
+                    <div class="container">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-10">
+                                <!-- Loading Spinner -->
+                                <div id="search-loading" class="text-center py-5" style="display: none;">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Searching...</span>
+                                    </div>
+                                    <p class="mt-3 text-muted">Checking availability...</p>
+                                </div>
+
+                                <!-- Results Container -->
+                                <div id="results-container"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TLD Pricing Table -->
+                <section class="tld-pricing py-5 bg-light">
+                    <div class="container">
+                        <div class="row justify-content-center mb-4">
+                            <div class="col-lg-8 text-center">
+                                <h2>Domain Pricing</h2>
+                                <p class="text-muted">Transparent pricing for all domain extensions</p>
+                            </div>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-lg-10">
+                                <div class="table-responsive">
+                                    <table class="table table-hover bg-white rounded shadow-sm">
+                                        <thead class="table-primary">
+                                            <tr>
+                                                <th>Extension</th>
+                                                <th>Registration</th>
+                                                <th class="text-end">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-foreach="tld_pricing" t-as="item">
+                                                <tr t-att-class="'table-warning' if item.get('is_featured') else ''">
+                                                    <td>
+                                                        <strong>.<t t-esc="item['tld']"/></strong>
+                                                        <span t-if="item.get('is_featured')" class="badge bg-warning ms-2">Popular</span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="fw-bold text-primary" t-esc="'%.2f' % item['price']"/>
+                                                        <small class="text-muted">/year</small>
+                                                    </td>
+                                                    <td class="text-end">
+                                                        <button type="button" class="btn btn-sm btn-outline-primary search-tld-btn"
+                                                                t-att-data-tld="item['tld']">
+                                                            Search .<t t-esc="item['tld']"/>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Features Section -->
+                <section class="features py-5">
+                    <div class="container">
+                        <div class="row text-center">
+                            <div class="col-md-4 mb-4">
+                                <div class="p-4">
+                                    <i class="fa fa-shield fa-3x text-primary mb-3"></i>
+                                    <h4>Free WHOIS Privacy</h4>
+                                    <p class="text-muted">Protect your personal information with free privacy protection</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-4">
+                                <div class="p-4">
+                                    <i class="fa fa-lock fa-3x text-primary mb-3"></i>
+                                    <h4>Secure Management</h4>
+                                    <p class="text-muted">Full control over DNS settings and domain configuration</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-4">
+                                <div class="p-4">
+                                    <i class="fa fa-refresh fa-3x text-primary mb-3"></i>
+                                    <h4>Auto-Renewal</h4>
+                                    <p class="text-muted">Never lose your domain with automatic renewal option</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Domain Search JavaScript -->
+            <script type="text/javascript">
+                document.addEventListener('DOMContentLoaded', function() {
+                    const searchForm = document.getElementById('domain-search-form');
+                    const searchInput = document.getElementById('domain-search-input');
+                    const resultsSection = document.getElementById('search-results');
+                    const loadingSpinner = document.getElementById('search-loading');
+                    const resultsContainer = document.getElementById('results-container');
+
+                    // TLD quick select buttons
+                    document.querySelectorAll('.tld-btn, .search-tld-btn').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const tld = this.dataset.tld;
+                            if (searchInput.value) {
+                                checkDomain(searchInput.value, [tld]);
+                            }
+                        });
+                    });
+
+                    // Search form submission
+                    searchForm.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        const domain = searchInput.value.trim();
+                        if (domain) {
+                            checkDomain(domain);
+                        }
+                    });
+
+                    function checkDomain(domainName, tlds = null) {
+                        resultsSection.style.display = 'block';
+                        loadingSpinner.style.display = 'block';
+                        resultsContainer.innerHTML = '';
+
+                        fetch('/domains/check', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                jsonrpc: '2.0',
+                                method: 'call',
+                                params: {
+                                    domain_name: domainName,
+                                    tlds: tlds
+                                }
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            loadingSpinner.style.display = 'none';
+                            if (data.result &amp;&amp; data.result.success) {
+                                renderResults(data.result.results);
+                            } else {
+                                resultsContainer.innerHTML = '<div class="alert alert-danger">Unable to check domain availability. Please try again.</div>';
+                            }
+                        })
+                        .catch(error => {
+                            loadingSpinner.style.display = 'none';
+                            resultsContainer.innerHTML = '<div class="alert alert-danger">An error occurred. Please try again.</div>';
+                        });
+                    }
+
+                    function renderResults(results) {
+                        if (!results || results.length === 0) {
+                            resultsContainer.innerHTML = '<div class="alert alert-info">No results found.</div>';
+                            return;
+                        }
+
+                        let html = '<div class="list-group">';
+                        results.forEach(result => {
+                            const statusClass = result.available ? 'list-group-item-success' : 'list-group-item-secondary';
+                            const statusIcon = result.available ? 'fa-check-circle text-success' : 'fa-times-circle text-danger';
+                            const statusText = result.available ? 'Available' : 'Taken';
+
+                            html += `
+                                <div class="list-group-item ${statusClass} d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="fa ${statusIcon} me-2"></i>
+                                        <strong>${result.domain}</strong>
+                                        <span class="badge ${result.available ? 'bg-success' : 'bg-secondary'} ms-2">${statusText}</span>
+                                    </div>
+                                    <div>
+                                        ${result.available ? `
+                                            <span class="me-3 fw-bold">${result.price.toFixed(2)} /year</span>
+                                            <a href="/domains/configure?domain=${result.domain.split('.')[0]}&amp;tld=${result.tld}"
+                                               class="btn btn-primary btn-sm">
+                                                <i class="fa fa-shopping-cart me-1"></i>Register
+                                            </a>
+                                        ` : `
+                                            <span class="text-muted">Not available</span>
+                                        `}
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        html += '</div>';
+
+                        resultsContainer.innerHTML = html;
+                    }
+
+                    // Check for initial search query
+                    if (searchInput.value) {
+                        checkDomain(searchInput.value);
+                    }
+                });
+            </script>
+        </t>
+    </template>
+
+    <!-- ================================= -->
+    <!-- DOMAIN CONFIGURE PAGE -->
+    <!-- ================================= -->
+
+    <template id="domain_configure_page" name="Configure Domain">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+                <section class="py-5">
+                    <div class="container">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-8">
+                                <!-- Breadcrumb -->
+                                <nav aria-label="breadcrumb" class="mb-4">
+                                    <ol class="breadcrumb">
+                                        <li class="breadcrumb-item"><a href="/domains">Domain Search</a></li>
+                                        <li class="breadcrumb-item active" t-esc="full_domain"/>
+                                    </ol>
+                                </nav>
+
+                                <div class="card shadow">
+                                    <div class="card-header bg-success text-white">
+                                        <h4 class="mb-0">
+                                            <i class="fa fa-check-circle me-2"></i>
+                                            <t t-esc="full_domain"/> is available!
+                                        </h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <form id="domain-config-form" action="/domains/add-to-cart" method="post">
+                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                            <input type="hidden" name="domain_name" t-att-value="domain_name"/>
+                                            <input type="hidden" name="tld" t-att-value="tld"/>
+
+                                            <!-- Registration Period -->
+                                            <div class="mb-4">
+                                                <label class="form-label fw-bold">Registration Period</label>
+                                                <div class="row g-2">
+                                                    <t t-foreach="range(1, max_years + 1)" t-as="year">
+                                                        <div class="col-auto">
+                                                            <div class="form-check form-check-inline">
+                                                                <input class="form-check-input" type="radio"
+                                                                       name="years" t-att-id="'year_' + str(year)"
+                                                                       t-att-value="year"
+                                                                       t-att-checked="year == default_years"/>
+                                                                <label class="form-check-label" t-att-for="'year_' + str(year)">
+                                                                    <t t-esc="year"/> year<t t-if="year > 1">s</t>
+                                                                    <small class="text-muted">
+                                                                        (<t t-esc="'%.2f' % (price_per_year * year)"/>)
+                                                                    </small>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </t>
+                                                </div>
+                                            </div>
+
+                                            <!-- WHOIS Privacy -->
+                                            <div class="mb-4" t-if="show_privacy">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox"
+                                                           name="privacy" id="privacy" value="1"/>
+                                                    <label class="form-check-label" for="privacy">
+                                                        <i class="fa fa-shield text-primary me-1"></i>
+                                                        <strong>WHOIS Privacy Protection</strong>
+                                                        <t t-if="privacy_price > 0">
+                                                            (+<t t-esc="'%.2f' % privacy_price"/>/year)
+                                                        </t>
+                                                        <t t-else="">
+                                                            <span class="badge bg-success">FREE</span>
+                                                        </t>
+                                                        <br/>
+                                                        <small class="text-muted">Hide your personal information from public WHOIS lookups</small>
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            <!-- Auto Renewal -->
+                                            <div class="mb-4" t-if="show_auto_renew">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox"
+                                                           name="auto_renew" id="auto_renew" value="1" checked="checked"/>
+                                                    <label class="form-check-label" for="auto_renew">
+                                                        <i class="fa fa-refresh text-primary me-1"></i>
+                                                        <strong>Auto-Renewal</strong>
+                                                        <br/>
+                                                        <small class="text-muted">Automatically renew this domain before it expires</small>
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            <!-- Nameservers -->
+                                            <div class="mb-4">
+                                                <label class="form-label fw-bold">
+                                                    <i class="fa fa-server me-1"></i>Nameservers
+                                                </label>
+                                                <p class="text-muted small">Configure DNS servers for your domain</p>
+
+                                                <div class="row g-2">
+                                                    <div class="col-md-6">
+                                                        <input type="text" class="form-control" name="ns1"
+                                                               placeholder="Primary Nameserver"
+                                                               t-att-value="default_nameservers[0] if default_nameservers else ''"/>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <input type="text" class="form-control" name="ns2"
+                                                               placeholder="Secondary Nameserver"
+                                                               t-att-value="default_nameservers[1] if len(default_nameservers) > 1 else ''"/>
+                                                    </div>
+                                                </div>
+                                                <div class="row g-2 mt-2">
+                                                    <div class="col-md-6">
+                                                        <input type="text" class="form-control" name="ns3"
+                                                               placeholder="Nameserver 3 (Optional)"
+                                                               t-att-value="default_nameservers[2] if len(default_nameservers) > 2 else ''"/>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <input type="text" class="form-control" name="ns4"
+                                                               placeholder="Nameserver 4 (Optional)"
+                                                               t-att-value="default_nameservers[3] if len(default_nameservers) > 3 else ''"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Price Summary -->
+                                            <div class="bg-light p-3 rounded mb-4">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <strong>Total:</strong>
+                                                        <span id="total-price" class="h4 text-primary ms-2">
+                                                            <t t-esc="'%.2f' % (price_per_year * default_years)"/>
+                                                        </span>
+                                                    </div>
+                                                    <button type="submit" class="btn btn-primary btn-lg">
+                                                        <i class="fa fa-shopping-cart me-2"></i>Add to Cart
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Price Calculator Script -->
+            <script type="text/javascript">
+                document.addEventListener('DOMContentLoaded', function() {
+                    const pricePerYear = <t t-esc="price_per_year"/>;
+                    const privacyPrice = <t t-esc="privacy_price"/>;
+                    const totalPriceEl = document.getElementById('total-price');
+                    const form = document.getElementById('domain-config-form');
+
+                    function updatePrice() {
+                        const years = parseInt(document.querySelector('input[name="years"]:checked').value);
+                        const privacy = document.getElementById('privacy') ? document.getElementById('privacy').checked : false;
+
+                        let total = pricePerYear * years;
+                        if (privacy) {
+                            total += privacyPrice * years;
+                        }
+
+                        totalPriceEl.textContent = total.toFixed(2);
+                    }
+
+                    // Attach event listeners
+                    document.querySelectorAll('input[name="years"]').forEach(input => {
+                        input.addEventListener('change', updatePrice);
+                    });
+
+                    if (document.getElementById('privacy')) {
+                        document.getElementById('privacy').addEventListener('change', updatePrice);
+                    }
+
+                    // Handle form submission via AJAX
+                    form.addEventListener('submit', function(e) {
+                        e.preventDefault();
+
+                        const formData = new FormData(form);
+                        const data = {
+                            domain_name: formData.get('domain_name'),
+                            tld: formData.get('tld'),
+                            years: parseInt(formData.get('years')),
+                            privacy: formData.get('privacy') === '1',
+                            auto_renew: formData.get('auto_renew') === '1',
+                        };
+
+                        fetch('/domains/add-to-cart', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                jsonrpc: '2.0',
+                                method: 'call',
+                                params: data
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(result => {
+                            if (result.result &amp;&amp; result.result.success) {
+                                window.location.href = '/shop/cart';
+                            } else {
+                                alert(result.result.error || 'Failed to add to cart');
+                            }
+                        })
+                        .catch(error => {
+                            alert('An error occurred. Please try again.');
+                        });
+                    });
+                });
+            </script>
+        </t>
+    </template>
+
+    <!-- ================================= -->
+    <!-- HOSTING PRODUCTS PAGE -->
+    <!-- ================================= -->
+
+    <template id="hosting_products_page" name="Hosting Products">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+                <!-- Hero -->
+                <section class="s_banner pt-5 pb-5 bg-primary text-white">
+                    <div class="container text-center">
+                        <h1 class="display-4 fw-bold">Web Hosting</h1>
+                        <p class="lead">Fast, reliable hosting for your websites and applications</p>
+                    </div>
+                </section>
+
+                <!-- Products -->
+                <section class="py-5">
+                    <div class="container">
+                        <t t-foreach="products_by_type.items()" t-as="type_products">
+                            <t t-set="type_code" t-value="type_products[0]"/>
+                            <t t-set="products" t-value="type_products[1]"/>
+
+                            <div class="mb-5">
+                                <h3 class="mb-4">
+                                    <t t-esc="hosting_types.get(type_code, type_code)"/>
+                                </h3>
+                                <div class="row">
+                                    <t t-foreach="products" t-as="product">
+                                        <div class="col-md-4 mb-4">
+                                            <div class="card h-100 shadow-sm">
+                                                <div class="card-body text-center">
+                                                    <h5 class="card-title" t-esc="product.name"/>
+                                                    <p class="card-text text-muted" t-if="product.description_sale" t-esc="product.description_sale"/>
+                                                    <div class="pricing my-3">
+                                                        <span class="h3 text-primary" t-esc="'%.2f' % product.list_price"/>
+                                                        <small class="text-muted">/month</small>
+                                                    </div>
+                                                    <a t-att-href="'/shop/product/%s' % product.id" class="btn btn-primary">
+                                                        View Details
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+
+    <!-- ================================= -->
+    <!-- SSL PRODUCTS PAGE -->
+    <!-- ================================= -->
+
+    <template id="ssl_products_page" name="SSL Certificates">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+                <!-- Hero -->
+                <section class="s_banner pt-5 pb-5 bg-success text-white">
+                    <div class="container text-center">
+                        <h1 class="display-4 fw-bold">
+                            <i class="fa fa-lock me-2"></i>SSL Certificates
+                        </h1>
+                        <p class="lead">Secure your website with trusted SSL certificates</p>
+                    </div>
+                </section>
+
+                <!-- Products -->
+                <section class="py-5">
+                    <div class="container">
+                        <t t-foreach="products_by_type.items()" t-as="type_products">
+                            <t t-set="type_code" t-value="type_products[0]"/>
+                            <t t-set="products" t-value="type_products[1]"/>
+
+                            <div class="mb-5">
+                                <h3 class="mb-4">
+                                    <t t-esc="ssl_types.get(type_code, type_code)"/>
+                                </h3>
+                                <div class="row">
+                                    <t t-foreach="products" t-as="product">
+                                        <div class="col-md-4 mb-4">
+                                            <div class="card h-100 shadow-sm">
+                                                <div class="card-body text-center">
+                                                    <i class="fa fa-certificate fa-3x text-success mb-3"></i>
+                                                    <h5 class="card-title" t-esc="product.name"/>
+                                                    <p class="card-text text-muted" t-if="product.description_sale" t-esc="product.description_sale"/>
+                                                    <div class="pricing my-3">
+                                                        <span class="h3 text-primary" t-esc="'%.2f' % product.list_price"/>
+                                                        <small class="text-muted">/year</small>
+                                                    </div>
+                                                    <a t-att-href="'/shop/product/%s' % product.id" class="btn btn-success">
+                                                        Buy Now
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+
+    <!-- ================================= -->
+    <!-- CHECKOUT RC INFO PAGE -->
+    <!-- ================================= -->
+
+    <template id="checkout_rc_info" name="Domain Configuration">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+                <section class="py-5">
+                    <div class="container">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-8">
+                                <h2 class="mb-4">Domain Configuration</h2>
+                                <p class="text-muted">Configure nameservers for your domains</p>
+
+                                <form action="/shop/checkout/rc_info/submit" method="post">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                                    <t t-foreach="domain_lines" t-as="item">
+                                        <div class="card mb-4">
+                                            <div class="card-header">
+                                                <strong t-esc="item['domain']"/>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="row g-3">
+                                                    <div class="col-md-6">
+                                                        <label class="form-label">Nameserver 1</label>
+                                                        <input type="text" class="form-control"
+                                                               t-att-name="'ns1_' + str(item['line'].id)"
+                                                               t-att-value="default_nameservers[0] if default_nameservers else ''"
+                                                               required="required"/>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label class="form-label">Nameserver 2</label>
+                                                        <input type="text" class="form-control"
+                                                               t-att-name="'ns2_' + str(item['line'].id)"
+                                                               t-att-value="default_nameservers[1] if len(default_nameservers) > 1 else ''"
+                                                               required="required"/>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label class="form-label">Nameserver 3 (Optional)</label>
+                                                        <input type="text" class="form-control"
+                                                               t-att-name="'ns3_' + str(item['line'].id)"
+                                                               t-att-value="default_nameservers[2] if len(default_nameservers) > 2 else ''"/>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label class="form-label">Nameserver 4 (Optional)</label>
+                                                        <input type="text" class="form-control"
+                                                               t-att-name="'ns4_' + str(item['line'].id)"
+                                                               t-att-value="default_nameservers[3] if len(default_nameservers) > 3 else ''"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </t>
+
+                                    <div class="d-flex justify-content-between">
+                                        <a href="/shop/cart" class="btn btn-secondary">
+                                            <i class="fa fa-arrow-left me-2"></i>Back to Cart
+                                        </a>
+                                        <button type="submit" class="btn btn-primary">
+                                            Continue to Checkout<i class="fa fa-arrow-right ms-2"></i>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+
+    <!-- ================================= -->
+    <!-- WEBSITE MENU ITEMS -->
+    <!-- ================================= -->
+
+    <!-- Add Domains menu item to main menu -->
+    <record id="menu_domains" model="website.menu">
+        <field name="name">Domains</field>
+        <field name="url">/domains</field>
+        <field name="parent_id" ref="website.main_menu"/>
+        <field name="sequence">15</field>
+    </record>
+
+    <!-- Add Hosting menu item -->
+    <record id="menu_hosting" model="website.menu">
+        <field name="name">Hosting</field>
+        <field name="url">/hosting</field>
+        <field name="parent_id" ref="website.main_menu"/>
+        <field name="sequence">16</field>
+    </record>
+
+    <!-- Add SSL menu item -->
+    <record id="menu_ssl" model="website.menu">
+        <field name="name">SSL</field>
+        <field name="url">/ssl-certificates</field>
+        <field name="parent_id" ref="website.main_menu"/>
+        <field name="sequence">17</field>
+    </record>
+
+</odoo>

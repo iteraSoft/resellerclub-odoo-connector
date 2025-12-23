@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!--
+            Subscription Recurring Plans for ResellerClub Services
+            These plans define the billing periods for domain, hosting, and SSL products
+        -->
+
+        <!-- Domain Registration Plans -->
+        <record id="subscription_plan_domain_1year" model="sale.subscription.plan">
+            <field name="name">Domain - Annual (1 Year)</field>
+            <field name="billing_period_value">1</field>
+            <field name="billing_period_unit">year</field>
+            <field name="auto_close_limit">0</field>
+        </record>
+
+        <record id="subscription_plan_domain_2year" model="sale.subscription.plan">
+            <field name="name">Domain - Biennial (2 Years)</field>
+            <field name="billing_period_value">2</field>
+            <field name="billing_period_unit">year</field>
+            <field name="auto_close_limit">0</field>
+        </record>
+
+        <record id="subscription_plan_domain_3year" model="sale.subscription.plan">
+            <field name="name">Domain - 3 Years</field>
+            <field name="billing_period_value">3</field>
+            <field name="billing_period_unit">year</field>
+            <field name="auto_close_limit">0</field>
+        </record>
+
+        <record id="subscription_plan_domain_5year" model="sale.subscription.plan">
+            <field name="name">Domain - 5 Years</field>
+            <field name="billing_period_value">5</field>
+            <field name="billing_period_unit">year</field>
+            <field name="auto_close_limit">0</field>
+        </record>
+
+        <record id="subscription_plan_domain_10year" model="sale.subscription.plan">
+            <field name="name">Domain - 10 Years</field>
+            <field name="billing_period_value">10</field>
+            <field name="billing_period_unit">year</field>
+            <field name="auto_close_limit">0</field>
+        </record>
+
+        <!-- Hosting Plans -->
+        <record id="subscription_plan_hosting_monthly" model="sale.subscription.plan">
+            <field name="name">Hosting - Monthly</field>
+            <field name="billing_period_value">1</field>
+            <field name="billing_period_unit">month</field>
+            <field name="auto_close_limit">0</field>
+        </record>
+
+        <record id="subscription_plan_hosting_quarterly" model="sale.subscription.plan">
+            <field name="name">Hosting - Quarterly (3 Months)</field>
+            <field name="billing_period_value">3</field>
+            <field name="billing_period_unit">month</field>
+            <field name="auto_close_limit">0</field>
+        </record>
+
+        <record id="subscription_plan_hosting_semiannual" model="sale.subscription.plan">
+            <field name="name">Hosting - Semi-Annual (6 Months)</field>
+            <field name="billing_period_value">6</field>
+            <field name="billing_period_unit">month</field>
+            <field name="auto_close_limit">0</field>
+        </record>
+
+        <record id="subscription_plan_hosting_annual" model="sale.subscription.plan">
+            <field name="name">Hosting - Annual (12 Months)</field>
+            <field name="billing_period_value">1</field>
+            <field name="billing_period_unit">year</field>
+            <field name="auto_close_limit">0</field>
+        </record>
+
+        <record id="subscription_plan_hosting_biennial" model="sale.subscription.plan">
+            <field name="name">Hosting - Biennial (24 Months)</field>
+            <field name="billing_period_value">2</field>
+            <field name="billing_period_unit">year</field>
+            <field name="auto_close_limit">0</field>
+        </record>
+
+        <record id="subscription_plan_hosting_triennial" model="sale.subscription.plan">
+            <field name="name">Hosting - Triennial (36 Months)</field>
+            <field name="billing_period_value">3</field>
+            <field name="billing_period_unit">year</field>
+            <field name="auto_close_limit">0</field>
+        </record>
+
+        <!-- SSL Certificate Plans -->
+        <record id="subscription_plan_ssl_annual" model="sale.subscription.plan">
+            <field name="name">SSL Certificate - Annual</field>
+            <field name="billing_period_value">1</field>
+            <field name="billing_period_unit">year</field>
+            <field name="auto_close_limit">0</field>
+        </record>
+
+        <record id="subscription_plan_ssl_biennial" model="sale.subscription.plan">
+            <field name="name">SSL Certificate - Biennial (2 Years)</field>
+            <field name="billing_period_value">2</field>
+            <field name="billing_period_unit">year</field>
+            <field name="auto_close_limit">0</field>
+        </record>
+
+        <!-- Email Hosting Plans -->
+        <record id="subscription_plan_email_monthly" model="sale.subscription.plan">
+            <field name="name">Email Hosting - Monthly</field>
+            <field name="billing_period_value">1</field>
+            <field name="billing_period_unit">month</field>
+            <field name="auto_close_limit">0</field>
+        </record>
+
+        <record id="subscription_plan_email_annual" model="sale.subscription.plan">
+            <field name="name">Email Hosting - Annual</field>
+            <field name="billing_period_value">1</field>
+            <field name="billing_period_unit">year</field>
+            <field name="auto_close_limit">0</field>
+        </record>
+
+        <!-- VPS/Server Plans -->
+        <record id="subscription_plan_server_monthly" model="sale.subscription.plan">
+            <field name="name">Server - Monthly</field>
+            <field name="billing_period_value">1</field>
+            <field name="billing_period_unit">month</field>
+            <field name="auto_close_limit">0</field>
+        </record>
+
+        <record id="subscription_plan_server_annual" model="sale.subscription.plan">
+            <field name="name">Server - Annual</field>
+            <field name="billing_period_value">1</field>
+            <field name="billing_period_unit">year</field>
+            <field name="auto_close_limit">0</field>
+        </record>
+    </data>
+</odoo>
