@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- DNS Record Tree View -->
+    <record id="resellerclub_dns_record_view_list" model="ir.ui.view">
+        <field name="name">resellerclub.dns.record.list</field>
+        <field name="model">resellerclub.dns.record</field>
+        <field name="arch" type="xml">
+            <list string="DNS Records" editable="bottom"
+                  decoration-muted="not is_synced"
+                  decoration-danger="sync_error">
+                <field name="domain_id" column_invisible="context.get('hide_domain')"/>
+                <field name="record_type"/>
+                <field name="host"/>
+                <field name="value"/>
+                <field name="ttl"/>
+                <field name="priority" invisible="record_type not in ['MX', 'SRV']"/>
+                <field name="is_synced" widget="boolean"/>
+                <field name="sync_error" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- DNS Record Form View -->
+    <record id="resellerclub_dns_record_view_form" model="ir.ui.view">
+        <field name="name">resellerclub.dns.record.form</field>
+        <field name="model">resellerclub.dns.record</field>
+        <field name="arch" type="xml">
+            <form string="DNS Record">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="domain_id"/>
+                            <field name="record_type"/>
+                            <field name="host"/>
+                        </group>
+                        <group>
+                            <field name="value"/>
+                            <field name="ttl"/>
+                            <field name="priority" invisible="record_type not in ['MX', 'SRV']"/>
+                        </group>
+                    </group>
+                    <group string="SRV Record Details" invisible="record_type != 'SRV'">
+                        <field name="srv_weight"/>
+                        <field name="srv_port"/>
+                    </group>
+                    <group string="Sync Status">
+                        <field name="is_synced"/>
+                        <field name="sync_error" invisible="not sync_error"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- DNS Record Action -->
+    <record id="action_resellerclub_dns_record" model="ir.actions.act_window">
+        <field name="name">DNS Records</field>
+        <field name="res_model">resellerclub.dns.record</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Add DNS records
+            </p>
+        </field>
+    </record>
+
+    <!-- DNS Template Views -->
+    <record id="resellerclub_dns_template_view_list" model="ir.ui.view">
+        <field name="name">resellerclub.dns.template.list</field>
+        <field name="model">resellerclub.dns.template</field>
+        <field name="arch" type="xml">
+            <list string="DNS Templates">
+                <field name="name"/>
+                <field name="description"/>
+                <field name="is_active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="resellerclub_dns_template_view_form" model="ir.ui.view">
+        <field name="name">resellerclub.dns.template.form</field>
+        <field name="model">resellerclub.dns.template</field>
+        <field name="arch" type="xml">
+            <form string="DNS Template">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="Template Name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <field name="description"/>
+                        <field name="is_active"/>
+                    </group>
+                    <notebook>
+                        <page string="DNS Records" name="records">
+                            <field name="record_ids">
+                                <list editable="bottom">
+                                    <field name="record_type"/>
+                                    <field name="host"/>
+                                    <field name="value"/>
+                                    <field name="ttl"/>
+                                    <field name="priority"/>
+                                </list>
+                            </field>
+                            <div class="alert alert-info mt-3" role="alert">
+                                <strong>Tip:</strong> Use <code>{domain}</code> as a placeholder
+                                for the actual domain name when the template is applied.
+                            </div>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_resellerclub_dns_template" model="ir.actions.act_window">
+        <field name="name">DNS Templates</field>
+        <field name="res_model">resellerclub.dns.template</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create DNS templates for quick setup
+            </p>
+            <p>
+                DNS templates allow you to quickly apply common DNS configurations to domains.
+            </p>
+        </field>
+    </record>
+</odoo>

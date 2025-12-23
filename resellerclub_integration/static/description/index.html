@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ResellerClub Integration for Odoo</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 { color: #875A7B; }
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+        .badge-primary { background: #875A7B; color: white; }
+        .badge-success { background: #28a745; color: white; }
+        .badge-info { background: #17a2b8; color: white; }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .feature-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #875A7B;
+        }
+        .feature-card h3 {
+            margin-top: 0;
+            font-size: 18px;
+        }
+        .screenshot {
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+        code {
+            background: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        .highlight {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+
+<h1>ResellerClub Integration for Odoo</h1>
+
+<p>
+    <span class="badge badge-primary">Odoo 19.0</span>
+    <span class="badge badge-success">LGPL-3</span>
+    <span class="badge badge-info">HTTP API</span>
+</p>
+
+<p>Complete integration with ResellerClub HTTP API for managing domains, hosting, SSL certificates, and more directly from Odoo.</p>
+
+<h2>Key Features</h2>
+
+<div class="feature-grid">
+    <div class="feature-card">
+        <h3>🌐 Domain Management</h3>
+        <ul>
+            <li>Register new domains</li>
+            <li>Transfer from other registrars</li>
+            <li>Renew domains</li>
+            <li>DNS management</li>
+            <li>WHOIS privacy protection</li>
+        </ul>
+    </div>
+
+    <div class="feature-card">
+        <h3>🖥️ Hosting Services</h3>
+        <ul>
+            <li>Single/Multi domain hosting</li>
+            <li>Reseller hosting</li>
+            <li>Email hosting</li>
+            <li>VPS & Dedicated servers</li>
+        </ul>
+    </div>
+
+    <div class="feature-card">
+        <h3>🔒 SSL Certificates</h3>
+        <ul>
+            <li>DV, OV, EV certificates</li>
+            <li>Wildcard & Multi-domain</li>
+            <li>CSR generation</li>
+            <li>Automatic enrollment</li>
+        </ul>
+    </div>
+
+    <div class="feature-card">
+        <h3>👥 Customer Management</h3>
+        <ul>
+            <li>Sync with Odoo contacts</li>
+            <li>Auto-create in ResellerClub</li>
+            <li>Contact management</li>
+            <li>Customer portal</li>
+        </ul>
+    </div>
+
+    <div class="feature-card">
+        <h3>📊 Sales Integration</h3>
+        <ul>
+            <li>Product synchronization</li>
+            <li>Automatic provisioning</li>
+            <li>Order tracking</li>
+            <li>Pricing with margins</li>
+        </ul>
+    </div>
+
+    <div class="feature-card">
+        <h3>🔔 Notifications</h3>
+        <ul>
+            <li>Expiry reminders</li>
+            <li>Customer emails</li>
+            <li>Activity scheduling</li>
+            <li>Renewal alerts</li>
+        </ul>
+    </div>
+</div>
+
+<h2>Configuration</h2>
+
+<div class="highlight">
+    <strong>Getting Started:</strong>
+    <ol>
+        <li>Install the module from Apps</li>
+        <li>Go to Settings > ResellerClub</li>
+        <li>Enter your Reseller ID and API Key</li>
+        <li>Test the connection</li>
+        <li>Sync products from ResellerClub</li>
+    </ol>
+</div>
+
+<h2>Customer Portal</h2>
+
+<p>Your customers can manage their services through the Odoo portal:</p>
+<ul>
+    <li>View all domains, hosting, and SSL certificates</li>
+    <li>Check expiration dates and status</li>
+    <li>See service details and configurations</li>
+</ul>
+
+<h2>API Endpoints</h2>
+
+<p>The module provides the following API endpoints:</p>
+
+<table style="width:100%; border-collapse: collapse;">
+    <tr style="background: #f8f9fa;">
+        <th style="padding: 10px; text-align: left;">Endpoint</th>
+        <th style="padding: 10px; text-align: left;">Description</th>
+    </tr>
+    <tr>
+        <td style="padding: 10px;"><code>/resellerclub/domain/check</code></td>
+        <td style="padding: 10px;">Check domain availability</td>
+    </tr>
+    <tr>
+        <td style="padding: 10px;"><code>/resellerclub/domain/suggest</code></td>
+        <td style="padding: 10px;">Get domain name suggestions</td>
+    </tr>
+    <tr>
+        <td style="padding: 10px;"><code>/resellerclub/webhook</code></td>
+        <td style="padding: 10px;">Webhook handler for status updates</td>
+    </tr>
+</table>
+
+<h2>Technical Information</h2>
+
+<ul>
+    <li><strong>Dependencies:</strong> sale_management, account, contacts, product, mail, portal, website_sale</li>
+    <li><strong>Python Dependencies:</strong> requests</li>
+    <li><strong>API:</strong> ResellerClub HTTP API</li>
+    <li><strong>Test Mode:</strong> Supports ResellerClub sandbox environment</li>
+</ul>
+
+<h2>Support</h2>
+
+<p>For support and feature requests, please contact:</p>
+<ul>
+    <li>Website: <a href="https://www.iterasoft.com">www.iterasoft.com</a></li>
+    <li>GitHub: <a href="https://github.com/iteraSoft/resellerclub-odoo-connector">Repository</a></li>
+</ul>
+
+<hr>
+
+<p style="text-align: center; color: #666;">
+    Developed by iteraSoft | Licensed under LGPL-3
+</p>
+
+</body>
+</html>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Sale Order Form Inherit -->
+    <record id="sale_order_form_view_inherit_resellerclub" model="ir.ui.view">
+        <field name="name">sale.order.form.inherit.resellerclub</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <!-- Add RC Customer field -->
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="rc_customer_id" invisible="not has_resellerclub_products"
+                       options="{'no_create': True}"/>
+            </xpath>
+            <!-- Add provision status -->
+            <xpath expr="//field[@name='state']" position="before">
+                <field name="has_resellerclub_products" invisible="1"/>
+                <field name="rc_provision_status" invisible="not has_resellerclub_products"
+                       widget="badge"
+                       decoration-success="rc_provision_status == 'completed'"
+                       decoration-warning="rc_provision_status in ['pending', 'partial']"
+                       decoration-danger="rc_provision_status == 'failed'"/>
+            </xpath>
+            <!-- Add button box buttons -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_rc_orders" type="object"
+                        class="oe_stat_button" icon="fa-cloud"
+                        invisible="rc_orders_count == 0">
+                    <field name="rc_orders_count" widget="statinfo" string="RC Orders"/>
+                </button>
+            </xpath>
+            <!-- Add provision button in header -->
+            <xpath expr="//button[@name='action_confirm']" position="after">
+                <button name="action_provision_rc_products" type="object"
+                        string="Provision RC Products" class="btn-primary"
+                        invisible="state != 'sale' or rc_provision_status in ['not_applicable', 'completed']"
+                        groups="resellerclub_integration.group_resellerclub_manager"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Sale Order Line Form Inherit -->
+    <record id="sale_order_line_form_view_inherit_resellerclub" model="ir.ui.view">
+        <field name="name">sale.order.line.form.inherit.resellerclub</field>
+        <field name="model">sale.order.line</field>
+        <field name="inherit_id" ref="sale.view_order_line_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='product_id']" position="after">
+                <field name="is_rc_product" column_invisible="1"/>
+                <field name="rc_domain_name" optional="hide"/>
+                <field name="rc_years" optional="hide"/>
+                <field name="rc_provisioned" optional="hide" widget="boolean"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Sale Order Line Tree in Order Form -->
+    <record id="sale_order_form_line_inherit_resellerclub" model="ir.ui.view">
+        <field name="name">sale.order.form.line.inherit.resellerclub</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_id']" position="after">
+                <field name="is_rc_product" column_invisible="1"/>
+                <field name="rc_product_type" column_invisible="1"/>
+                <field name="rc_domain_name"
+                       placeholder="Domain name"
+                       optional="hide"
+                       column_invisible="parent.has_resellerclub_products == False"/>
+                <field name="rc_years"
+                       optional="hide"
+                       column_invisible="parent.has_resellerclub_products == False"/>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/list" position="attributes">
+                <attribute name="decoration-info">is_rc_product and not rc_provisioned</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Sale Order Line Form View (standalone) -->
+    <record id="sale_order_line_view_form_resellerclub" model="ir.ui.view">
+        <field name="name">sale.order.line.form.resellerclub</field>
+        <field name="model">sale.order.line</field>
+        <field name="inherit_id" ref="sale.view_sales_order_line_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <filter name="filter_rc_products" string="RC Products"
+                        domain="[('is_rc_product', '=', True)]"/>
+                <filter name="filter_not_provisioned" string="Not Provisioned"
+                        domain="[('is_rc_product', '=', True), ('rc_provisioned', '=', False)]"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

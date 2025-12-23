@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Cron to sync domains -->
+        <record id="ir_cron_sync_domains" model="ir.cron">
+            <field name="name">ResellerClub: Sync Domains</field>
+            <field name="model_id" ref="model_resellerclub_domain"/>
+            <field name="state">code</field>
+            <field name="code">model.cron_sync_domains()</field>
+            <field name="interval_number">4</field>
+            <field name="interval_type">hours</field>
+            <field name="numbercall">-1</field>
+            <field name="active">True</field>
+        </record>
+
+        <!-- Cron to sync hosting -->
+        <record id="ir_cron_sync_hosting" model="ir.cron">
+            <field name="name">ResellerClub: Sync Hosting</field>
+            <field name="model_id" ref="model_resellerclub_hosting"/>
+            <field name="state">code</field>
+            <field name="code">model.cron_sync_hosting()</field>
+            <field name="interval_number">4</field>
+            <field name="interval_type">hours</field>
+            <field name="numbercall">-1</field>
+            <field name="active">True</field>
+        </record>
+
+        <!-- Cron to sync SSL certificates -->
+        <record id="ir_cron_sync_ssl" model="ir.cron">
+            <field name="name">ResellerClub: Sync SSL Certificates</field>
+            <field name="model_id" ref="model_resellerclub_ssl"/>
+            <field name="state">code</field>
+            <field name="code">model.cron_sync_ssl()</field>
+            <field name="interval_number">4</field>
+            <field name="interval_type">hours</field>
+            <field name="numbercall">-1</field>
+            <field name="active">True</field>
+        </record>
+
+        <!-- Cron to sync customers -->
+        <record id="ir_cron_sync_customers" model="ir.cron">
+            <field name="name">ResellerClub: Sync Customers</field>
+            <field name="model_id" ref="model_resellerclub_customer"/>
+            <field name="state">code</field>
+            <field name="code">model.cron_sync_customers()</field>
+            <field name="interval_number">6</field>
+            <field name="interval_type">hours</field>
+            <field name="numbercall">-1</field>
+            <field name="active">True</field>
+        </record>
+
+        <!-- Cron to sync orders -->
+        <record id="ir_cron_sync_orders" model="ir.cron">
+            <field name="name">ResellerClub: Sync Orders</field>
+            <field name="model_id" ref="model_resellerclub_order"/>
+            <field name="state">code</field>
+            <field name="code">model.cron_sync_orders()</field>
+            <field name="interval_number">2</field>
+            <field name="interval_type">hours</field>
+            <field name="numbercall">-1</field>
+            <field name="active">True</field>
+        </record>
+
+        <!-- Cron for expiry notifications -->
+        <record id="ir_cron_expiry_notifications" model="ir.cron">
+            <field name="name">ResellerClub: Expiry Notifications</field>
+            <field name="model_id" ref="model_resellerclub_domain"/>
+            <field name="state">code</field>
+            <field name="code">model.cron_expiry_notifications()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="active">True</field>
+        </record>
+
+        <!-- Cron to clean old API logs -->
+        <record id="ir_cron_clean_api_logs" model="ir.cron">
+            <field name="name">ResellerClub: Clean Old API Logs</field>
+            <field name="model_id" ref="model_resellerclub_api_log"/>
+            <field name="state">code</field>
+            <field name="code">model._gc_old_logs()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">weeks</field>
+            <field name="numbercall">-1</field>
+            <field name="active">True</field>
+        </record>
+    </data>
+</odoo>

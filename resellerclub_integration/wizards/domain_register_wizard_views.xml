@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="domain_register_wizard_view_form" model="ir.ui.view">
+        <field name="name">resellerclub.domain.register.wizard.form</field>
+        <field name="model">resellerclub.domain.register.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Register Domain">
+                <group>
+                    <group string="Domain Details">
+                        <field name="domain_name" placeholder="example.com"/>
+                        <field name="availability_message"
+                               decoration-success="is_available"
+                               decoration-danger="not is_available and availability_message"/>
+                        <field name="is_available" invisible="1"/>
+                        <field name="customer_id"/>
+                        <field name="years"/>
+                        <field name="privacy_protection"/>
+                    </group>
+                    <group string="Pricing">
+                        <field name="estimated_cost" widget="monetary"/>
+                    </group>
+                </group>
+                <group string="Nameservers">
+                    <field name="use_default_ns"/>
+                    <group invisible="use_default_ns" col="2">
+                        <field name="ns1" placeholder="ns1.example.com"/>
+                        <field name="ns2" placeholder="ns2.example.com"/>
+                        <field name="ns3" placeholder="ns3.example.com"/>
+                        <field name="ns4" placeholder="ns4.example.com"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_check_availability" type="object"
+                            string="Check Availability" class="btn-secondary"/>
+                    <button name="action_register" type="object"
+                            string="Register Domain" class="btn-primary"
+                            invisible="not is_available"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_domain_register_wizard" model="ir.actions.act_window">
+        <field name="name">Register Domain</field>
+        <field name="res_model">resellerclub.domain.register.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

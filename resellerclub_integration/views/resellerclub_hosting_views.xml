@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Hosting Tree View -->
+    <record id="resellerclub_hosting_view_list" model="ir.ui.view">
+        <field name="name">resellerclub.hosting.list</field>
+        <field name="model">resellerclub.hosting</field>
+        <field name="arch" type="xml">
+            <list string="Hosting Services"
+                  decoration-danger="expiry_status == 'expired'"
+                  decoration-warning="expiry_status in ['warning', 'critical']">
+                <field name="domain_name"/>
+                <field name="hosting_type" widget="badge"/>
+                <field name="plan_name"/>
+                <field name="partner_id"/>
+                <field name="status" widget="badge"
+                       decoration-success="status == 'active'"
+                       decoration-danger="status in ['expired', 'deleted', 'suspended']"
+                       decoration-info="status == 'pending'"/>
+                <field name="creation_date"/>
+                <field name="expiration_date"/>
+                <field name="days_until_expiry"/>
+                <field name="auto_renew" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Hosting Form View -->
+    <record id="resellerclub_hosting_view_form" model="ir.ui.view">
+        <field name="name">resellerclub.hosting.form</field>
+        <field name="model">resellerclub.hosting</field>
+        <field name="arch" type="xml">
+            <form string="Hosting">
+                <header>
+                    <button name="action_order_hosting" type="object"
+                            string="Order Hosting" class="btn-primary"
+                            invisible="resellerclub_order_id"/>
+                    <button name="action_renew_hosting" type="object"
+                            string="Renew" class="btn-primary"
+                            invisible="status != 'active'"/>
+                    <button name="action_sync_from_resellerclub" type="object"
+                            string="Sync" class="btn-secondary"
+                            invisible="not resellerclub_order_id"/>
+                    <button name="action_upgrade_plan" type="object"
+                            string="Upgrade Plan" class="btn-secondary"
+                            invisible="status != 'active'"/>
+                    <button name="action_suspend" type="object"
+                            string="Suspend" class="btn-secondary text-danger"
+                            invisible="status != 'active'"
+                            confirm="Are you sure you want to suspend this hosting account?"/>
+                    <button name="action_unsuspend" type="object"
+                            string="Unsuspend" class="btn-secondary"
+                            invisible="status != 'suspended'"/>
+                    <field name="status" widget="statusbar"
+                           statusbar_visible="pending,active,expired"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_control_panel" type="object"
+                                class="oe_stat_button" icon="fa-external-link"
+                                invisible="not control_panel_url">
+                            <span>Control Panel</span>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="Expired" bg_color="text-bg-danger"
+                            invisible="expiry_status != 'expired'"/>
+                    <widget name="web_ribbon" title="Suspended" bg_color="text-bg-warning"
+                            invisible="status != 'suspended'"/>
+                    <div class="oe_title">
+                        <label for="domain_name"/>
+                        <h1>
+                            <field name="domain_name" placeholder="example.com"
+                                   readonly="resellerclub_order_id"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Service Details">
+                            <field name="hosting_type"/>
+                            <field name="plan_id" invisible="resellerclub_order_id"/>
+                            <field name="plan_name"/>
+                            <field name="customer_id"/>
+                            <field name="partner_id"/>
+                        </group>
+                        <group string="Billing">
+                            <field name="months" invisible="resellerclub_order_id"/>
+                            <field name="creation_date"/>
+                            <field name="expiration_date"/>
+                            <field name="days_until_expiry"/>
+                            <field name="auto_renew"/>
+                            <field name="resellerclub_order_id" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Resources" name="resources">
+                            <group>
+                                <group>
+                                    <field name="disk_space"/>
+                                    <field name="bandwidth"/>
+                                    <field name="databases"/>
+                                    <field name="email_accounts"/>
+                                </group>
+                                <group>
+                                    <field name="ftp_accounts"/>
+                                    <field name="addon_domains"/>
+                                    <field name="subdomains"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Server Details" name="server"
+                              invisible="hosting_type not in ['vps', 'dedicated', 'managed']">
+                            <group>
+                                <group>
+                                    <field name="ip_address"/>
+                                    <field name="os_name"/>
+                                </group>
+                                <group>
+                                    <field name="ram"/>
+                                    <field name="cpu"/>
+                                </group>
+                            </group>
+                            <group string="Access" invisible="not root_password">
+                                <field name="root_password" password="True"/>
+                            </group>
+                        </page>
+                        <page string="Control Panel" name="cpanel"
+                              invisible="not cpanel_username">
+                            <group>
+                                <group>
+                                    <field name="cpanel_username"/>
+                                    <field name="cpanel_password" password="True"/>
+                                </group>
+                                <group>
+                                    <field name="control_panel_url" widget="url"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes" placeholder="Internal notes..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Hosting Search View -->
+    <record id="resellerclub_hosting_view_search" model="ir.ui.view">
+        <field name="name">resellerclub.hosting.search</field>
+        <field name="model">resellerclub.hosting</field>
+        <field name="arch" type="xml">
+            <search string="Search Hosting">
+                <field name="domain_name"/>
+                <field name="plan_name"/>
+                <field name="partner_id"/>
+                <separator/>
+                <filter name="filter_active" string="Active" domain="[('status', '=', 'active')]"/>
+                <filter name="filter_suspended" string="Suspended" domain="[('status', '=', 'suspended')]"/>
+                <filter name="filter_expired" string="Expired" domain="[('status', '=', 'expired')]"/>
+                <separator/>
+                <filter name="filter_single" string="Single Domain" domain="[('hosting_type', '=', 'single')]"/>
+                <filter name="filter_multi" string="Multi Domain" domain="[('hosting_type', '=', 'multi')]"/>
+                <filter name="filter_reseller" string="Reseller" domain="[('hosting_type', '=', 'reseller')]"/>
+                <filter name="filter_email" string="Email" domain="[('hosting_type', '=', 'email')]"/>
+                <filter name="filter_vps" string="VPS" domain="[('hosting_type', '=', 'vps')]"/>
+                <separator/>
+                <filter name="filter_expiring" string="Expiring Soon"
+                        domain="[('days_until_expiry', '&lt;=', 30), ('days_until_expiry', '&gt;', 0)]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter name="group_type" string="Type" context="{'group_by': 'hosting_type'}"/>
+                    <filter name="group_status" string="Status" context="{'group_by': 'status'}"/>
+                    <filter name="group_customer" string="Customer" context="{'group_by': 'partner_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Hosting Action -->
+    <record id="action_resellerclub_hosting" model="ir.actions.act_window">
+        <field name="name">Hosting</field>
+        <field name="res_model">resellerclub.hosting</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="resellerclub_hosting_view_search"/>
+        <field name="context">{'search_default_filter_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Order your first hosting plan
+            </p>
+            <p>
+                Manage web hosting, email hosting, and server plans through ResellerClub.
+            </p>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_resellerclub" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.resellerclub</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="50"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="ResellerClub" string="ResellerClub" name="resellerclub_integration" groups="resellerclub_integration.group_resellerclub_manager">
+                    <block title="API Configuration" name="resellerclub_api_config">
+                        <setting string="API Credentials" help="Configure your ResellerClub API access">
+                            <div class="content-group">
+                                <div class="row mt16">
+                                    <label for="resellerclub_auth_userid" string="Reseller ID" class="col-lg-3 o_light_label"/>
+                                    <field name="resellerclub_auth_userid" class="col-lg-4"/>
+                                </div>
+                                <div class="row">
+                                    <label for="resellerclub_api_key" string="API Key" class="col-lg-3 o_light_label"/>
+                                    <field name="resellerclub_api_key" class="col-lg-4" password="True"/>
+                                </div>
+                                <div class="row">
+                                    <label for="resellerclub_test_mode" class="col-lg-3 o_light_label"/>
+                                    <field name="resellerclub_test_mode"/>
+                                </div>
+                            </div>
+                        </setting>
+                        <setting string="Connection Status" help="Test your connection to ResellerClub">
+                            <div class="content-group">
+                                <div class="row mt16">
+                                    <label for="resellerclub_connection_status" string="Status" class="col-lg-3 o_light_label"/>
+                                    <field name="resellerclub_connection_status" class="col-lg-4" widget="badge"
+                                           decoration-success="resellerclub_connection_status == 'connected'"
+                                           decoration-danger="resellerclub_connection_status == 'error'"
+                                           decoration-warning="resellerclub_connection_status == 'not_configured'"/>
+                                </div>
+                                <div class="row">
+                                    <label for="resellerclub_balance" string="Account Balance" class="col-lg-3 o_light_label"/>
+                                    <field name="resellerclub_balance" class="col-lg-4" widget="monetary"/>
+                                </div>
+                                <div class="row mt16">
+                                    <button name="action_test_connection" type="object"
+                                            string="Test Connection" class="btn-primary" icon="fa-plug"/>
+                                    <button name="action_refresh_balance" type="object"
+                                            string="Refresh Balance" class="btn-secondary ms-2" icon="fa-refresh"/>
+                                </div>
+                            </div>
+                        </setting>
+                    </block>
+
+                    <block title="Default Nameservers" name="resellerclub_nameservers">
+                        <setting string="Default Nameservers" help="Default nameservers for domain registrations">
+                            <div class="content-group">
+                                <div class="row mt16">
+                                    <label for="resellerclub_default_ns1" string="Nameserver 1" class="col-lg-3 o_light_label"/>
+                                    <field name="resellerclub_default_ns1" class="col-lg-4" placeholder="ns1.example.com"/>
+                                </div>
+                                <div class="row">
+                                    <label for="resellerclub_default_ns2" string="Nameserver 2" class="col-lg-3 o_light_label"/>
+                                    <field name="resellerclub_default_ns2" class="col-lg-4" placeholder="ns2.example.com"/>
+                                </div>
+                                <div class="row">
+                                    <label for="resellerclub_default_ns3" string="Nameserver 3" class="col-lg-3 o_light_label"/>
+                                    <field name="resellerclub_default_ns3" class="col-lg-4" placeholder="ns3.example.com (optional)"/>
+                                </div>
+                                <div class="row">
+                                    <label for="resellerclub_default_ns4" string="Nameserver 4" class="col-lg-3 o_light_label"/>
+                                    <field name="resellerclub_default_ns4" class="col-lg-4" placeholder="ns4.example.com (optional)"/>
+                                </div>
+                            </div>
+                        </setting>
+                    </block>
+
+                    <block title="Automation Settings" name="resellerclub_automation">
+                        <setting string="Customer Sync" help="Automatically create customers in ResellerClub">
+                            <field name="resellerclub_auto_create_customer"/>
+                        </setting>
+                        <setting string="Order Sync" help="Automatically synchronize order status">
+                            <field name="resellerclub_auto_sync_orders"/>
+                            <div class="content-group" invisible="not resellerclub_auto_sync_orders">
+                                <div class="row mt16">
+                                    <label for="resellerclub_sync_interval" string="Sync Interval (hours)" class="col-lg-4 o_light_label"/>
+                                    <field name="resellerclub_sync_interval" class="col-lg-2"/>
+                                </div>
+                            </div>
+                        </setting>
+                    </block>
+
+                    <block title="Notification Settings" name="resellerclub_notifications">
+                        <setting string="Renewal Reminders" help="Send renewal reminders before services expire">
+                            <div class="content-group">
+                                <div class="row mt16">
+                                    <label for="resellerclub_renewal_reminder_days" string="Days Before Expiry" class="col-lg-4 o_light_label"/>
+                                    <field name="resellerclub_renewal_reminder_days" class="col-lg-2"/>
+                                </div>
+                            </div>
+                        </setting>
+                        <setting string="Customer Emails" help="Send email notifications to customers">
+                            <field name="resellerclub_send_customer_emails"/>
+                        </setting>
+                    </block>
+
+                    <block title="Pricing Settings" name="resellerclub_pricing">
+                        <setting string="Product Margins" help="Default markup percentages for product pricing">
+                            <div class="content-group">
+                                <div class="row mt16">
+                                    <label for="resellerclub_domain_margin" string="Domain Margin (%)" class="col-lg-4 o_light_label"/>
+                                    <field name="resellerclub_domain_margin" class="col-lg-2"/>
+                                </div>
+                                <div class="row">
+                                    <label for="resellerclub_hosting_margin" string="Hosting Margin (%)" class="col-lg-4 o_light_label"/>
+                                    <field name="resellerclub_hosting_margin" class="col-lg-2"/>
+                                </div>
+                                <div class="row">
+                                    <label for="resellerclub_ssl_margin" string="SSL Margin (%)" class="col-lg-4 o_light_label"/>
+                                    <field name="resellerclub_ssl_margin" class="col-lg-2"/>
+                                </div>
+                            </div>
+                        </setting>
+                        <setting string="Sync Products" help="Synchronize products and pricing from ResellerClub">
+                            <div class="mt16">
+                                <button name="action_sync_products" type="object"
+                                        string="Sync All Products" class="btn-primary" icon="fa-refresh"/>
+                            </div>
+                        </setting>
+                    </block>
+
+                    <block title="Tools" name="resellerclub_tools">
+                        <setting string="API Logs" help="View API call history and debug information">
+                            <div class="mt16">
+                                <button name="action_view_api_logs" type="object"
+                                        string="View API Logs" class="btn-secondary" icon="fa-list"/>
+                            </div>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Action to open settings -->
+    <record id="action_resellerclub_settings" model="ir.actions.act_window">
+        <field name="name">ResellerClub Settings</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="context">{'module': 'resellerclub_integration', 'bin_size': False}</field>
+    </record>
+</odoo>

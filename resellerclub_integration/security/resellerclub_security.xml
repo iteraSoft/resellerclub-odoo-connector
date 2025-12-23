@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Security Groups -->
+    <record id="module_category_resellerclub" model="ir.module.category">
+        <field name="name">ResellerClub</field>
+        <field name="description">ResellerClub Integration module access rights</field>
+        <field name="sequence">100</field>
+    </record>
+
+    <record id="group_resellerclub_user" model="res.groups">
+        <field name="name">User</field>
+        <field name="category_id" ref="module_category_resellerclub"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        <field name="comment">Access to view and manage ResellerClub services</field>
+    </record>
+
+    <record id="group_resellerclub_manager" model="res.groups">
+        <field name="name">Manager</field>
+        <field name="category_id" ref="module_category_resellerclub"/>
+        <field name="implied_ids" eval="[(4, ref('group_resellerclub_user'))]"/>
+        <field name="comment">Full access to ResellerClub configuration and management</field>
+    </record>
+
+    <!-- Record Rules -->
+    <!-- Multi-company rule for domains -->
+    <record id="resellerclub_domain_company_rule" model="ir.rule">
+        <field name="name">ResellerClub Domain: Multi-company</field>
+        <field name="model_id" ref="model_resellerclub_domain"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <!-- Multi-company rule for hosting -->
+    <record id="resellerclub_hosting_company_rule" model="ir.rule">
+        <field name="name">ResellerClub Hosting: Multi-company</field>
+        <field name="model_id" ref="model_resellerclub_hosting"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <!-- Multi-company rule for SSL -->
+    <record id="resellerclub_ssl_company_rule" model="ir.rule">
+        <field name="name">ResellerClub SSL: Multi-company</field>
+        <field name="model_id" ref="model_resellerclub_ssl"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <!-- Multi-company rule for customers -->
+    <record id="resellerclub_customer_company_rule" model="ir.rule">
+        <field name="name">ResellerClub Customer: Multi-company</field>
+        <field name="model_id" ref="model_resellerclub_customer"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <!-- Multi-company rule for orders -->
+    <record id="resellerclub_order_company_rule" model="ir.rule">
+        <field name="name">ResellerClub Order: Multi-company</field>
+        <field name="model_id" ref="model_resellerclub_order"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <!-- API Logs - Manager only can see all, users see their own -->
+    <record id="resellerclub_api_log_user_rule" model="ir.rule">
+        <field name="name">ResellerClub API Log: User sees own</field>
+        <field name="model_id" ref="model_resellerclub_api_log"/>
+        <field name="domain_force">[('user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_resellerclub_user'))]"/>
+    </record>
+
+    <record id="resellerclub_api_log_manager_rule" model="ir.rule">
+        <field name="name">ResellerClub API Log: Manager sees all</field>
+        <field name="model_id" ref="model_resellerclub_api_log"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_resellerclub_manager'))]"/>
+    </record>
+</odoo>

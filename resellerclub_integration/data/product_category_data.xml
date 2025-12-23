@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Product Categories for ResellerClub products -->
+        <record id="product_category_resellerclub" model="product.category">
+            <field name="name">ResellerClub</field>
+        </record>
+
+        <record id="product_category_domains" model="product.category">
+            <field name="name">Domains</field>
+            <field name="parent_id" ref="product_category_resellerclub"/>
+        </record>
+
+        <record id="product_category_hosting" model="product.category">
+            <field name="name">Web Hosting</field>
+            <field name="parent_id" ref="product_category_resellerclub"/>
+        </record>
+
+        <record id="product_category_email" model="product.category">
+            <field name="name">Email Hosting</field>
+            <field name="parent_id" ref="product_category_resellerclub"/>
+        </record>
+
+        <record id="product_category_ssl" model="product.category">
+            <field name="name">SSL Certificates</field>
+            <field name="parent_id" ref="product_category_resellerclub"/>
+        </record>
+
+        <record id="product_category_servers" model="product.category">
+            <field name="name">Servers</field>
+            <field name="parent_id" ref="product_category_resellerclub"/>
+        </record>
+
+        <record id="product_category_security" model="product.category">
+            <field name="name">Security</field>
+            <field name="parent_id" ref="product_category_resellerclub"/>
+        </record>
+    </data>
+</odoo>

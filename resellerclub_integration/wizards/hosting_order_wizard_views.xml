@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="hosting_order_wizard_view_form" model="ir.ui.view">
+        <field name="name">resellerclub.hosting.order.wizard.form</field>
+        <field name="model">resellerclub.hosting.order.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Order Hosting">
+                <group>
+                    <group string="Hosting Details">
+                        <field name="domain_name" placeholder="example.com"/>
+                        <field name="customer_id"/>
+                        <field name="hosting_type"/>
+                        <field name="product_id" options="{'no_create': True}"/>
+                    </group>
+                    <group string="Billing">
+                        <field name="months"/>
+                        <field name="auto_renew"/>
+                        <field name="estimated_cost" widget="monetary"/>
+                    </group>
+                </group>
+                <group string="Email Options" invisible="hosting_type != 'email'">
+                    <field name="email_accounts"/>
+                </group>
+                <footer>
+                    <button name="action_order" type="object"
+                            string="Order Hosting" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_hosting_order_wizard" model="ir.actions.act_window">
+        <field name="name">Order Hosting</field>
+        <field name="res_model">resellerclub.hosting.order.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

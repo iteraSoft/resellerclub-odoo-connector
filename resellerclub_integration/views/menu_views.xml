@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Main Menu -->
+    <menuitem id="menu_resellerclub_root"
+              name="ResellerClub"
+              web_icon="resellerclub_integration,static/description/icon.png"
+              groups="resellerclub_integration.group_resellerclub_user"
+              sequence="50"/>
+
+    <!-- Dashboard Menu (placeholder for future dashboard) -->
+    <menuitem id="menu_resellerclub_dashboard"
+              name="Dashboard"
+              parent="menu_resellerclub_root"
+              action="action_resellerclub_domain"
+              sequence="5"/>
+
+    <!-- Domains Menu -->
+    <menuitem id="menu_resellerclub_domains"
+              name="Domains"
+              parent="menu_resellerclub_root"
+              sequence="10"/>
+
+    <menuitem id="menu_resellerclub_domains_all"
+              name="All Domains"
+              parent="menu_resellerclub_domains"
+              action="action_resellerclub_domain"
+              sequence="10"/>
+
+    <menuitem id="menu_resellerclub_domains_expiring"
+              name="Expiring Soon"
+              parent="menu_resellerclub_domains"
+              action="action_resellerclub_domain_expiring"
+              sequence="20"/>
+
+    <menuitem id="menu_resellerclub_dns_templates"
+              name="DNS Templates"
+              parent="menu_resellerclub_domains"
+              action="action_resellerclub_dns_template"
+              sequence="30"
+              groups="resellerclub_integration.group_resellerclub_manager"/>
+
+    <!-- Hosting Menu -->
+    <menuitem id="menu_resellerclub_hosting"
+              name="Hosting"
+              parent="menu_resellerclub_root"
+              action="action_resellerclub_hosting"
+              sequence="20"/>
+
+    <!-- SSL Menu -->
+    <menuitem id="menu_resellerclub_ssl"
+              name="SSL Certificates"
+              parent="menu_resellerclub_root"
+              action="action_resellerclub_ssl"
+              sequence="30"/>
+
+    <!-- Customers Menu -->
+    <menuitem id="menu_resellerclub_customers"
+              name="Customers"
+              parent="menu_resellerclub_root"
+              action="action_resellerclub_customer"
+              sequence="40"/>
+
+    <!-- Products Menu -->
+    <menuitem id="menu_resellerclub_products"
+              name="Products"
+              parent="menu_resellerclub_root"
+              action="action_resellerclub_products"
+              sequence="50"
+              groups="resellerclub_integration.group_resellerclub_manager"/>
+
+    <!-- Orders Menu -->
+    <menuitem id="menu_resellerclub_orders"
+              name="Orders"
+              parent="menu_resellerclub_root"
+              sequence="60"/>
+
+    <menuitem id="menu_resellerclub_orders_all"
+              name="All Orders"
+              parent="menu_resellerclub_orders"
+              action="action_resellerclub_order"
+              sequence="10"/>
+
+    <menuitem id="menu_resellerclub_transactions"
+              name="Transactions"
+              parent="menu_resellerclub_orders"
+              action="action_resellerclub_transaction"
+              sequence="20"
+              groups="resellerclub_integration.group_resellerclub_manager"/>
+
+    <!-- Configuration Menu -->
+    <menuitem id="menu_resellerclub_config"
+              name="Configuration"
+              parent="menu_resellerclub_root"
+              sequence="100"
+              groups="resellerclub_integration.group_resellerclub_manager"/>
+
+    <menuitem id="menu_resellerclub_settings"
+              name="Settings"
+              parent="menu_resellerclub_config"
+              action="action_resellerclub_settings"
+              sequence="10"/>
+
+    <menuitem id="menu_resellerclub_api_logs"
+              name="API Logs"
+              parent="menu_resellerclub_config"
+              action="action_resellerclub_api_log"
+              sequence="20"/>
+
+    <!-- Add to Settings Menu -->
+    <menuitem id="menu_resellerclub_config_settings"
+              name="ResellerClub"
+              parent="base.menu_administration"
+              action="action_resellerclub_settings"
+              groups="resellerclub_integration.group_resellerclub_manager"
+              sequence="90"/>
+</odoo>

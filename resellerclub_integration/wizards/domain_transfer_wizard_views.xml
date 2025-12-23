@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="domain_transfer_wizard_view_form" model="ir.ui.view">
+        <field name="name">resellerclub.domain.transfer.wizard.form</field>
+        <field name="model">resellerclub.domain.transfer.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Transfer Domain">
+                <group>
+                    <group string="Domain Details">
+                        <field name="domain_name" placeholder="example.com"/>
+                        <field name="auth_code" password="True"
+                               placeholder="EPP/Transfer Authorization Code"/>
+                        <field name="customer_id"/>
+                    </group>
+                    <group string="Pricing">
+                        <field name="estimated_cost" widget="monetary"/>
+                    </group>
+                </group>
+                <group string="Nameservers">
+                    <field name="keep_existing_ns"/>
+                    <group invisible="keep_existing_ns" col="2">
+                        <field name="ns1" placeholder="ns1.example.com"/>
+                        <field name="ns2" placeholder="ns2.example.com"/>
+                        <field name="ns3" placeholder="ns3.example.com"/>
+                        <field name="ns4" placeholder="ns4.example.com"/>
+                    </group>
+                </group>
+                <div class="alert alert-info" role="alert">
+                    <strong>Note:</strong> Domain transfers typically take 5-7 days to complete.
+                    You will receive email notifications about the transfer status.
+                </div>
+                <footer>
+                    <button name="action_transfer" type="object"
+                            string="Initiate Transfer" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_domain_transfer_wizard" model="ir.actions.act_window">
+        <field name="name">Transfer Domain</field>
+        <field name="res_model">resellerclub.domain.transfer.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

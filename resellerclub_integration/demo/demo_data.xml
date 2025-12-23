@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Demo ResellerClub Customer -->
+        <record id="demo_rc_customer" model="resellerclub.customer">
+            <field name="partner_id" ref="base.res_partner_1"/>
+            <field name="resellerclub_customer_id">12345678</field>
+            <field name="default_contact_id">87654321</field>
+            <field name="rc_status">active</field>
+            <field name="sync_status">synced</field>
+            <field name="last_sync_date" eval="datetime.datetime.now()"/>
+        </record>
+
+        <!-- Demo Domains -->
+        <record id="demo_domain_1" model="resellerclub.domain">
+            <field name="domain_name">example-demo.com</field>
+            <field name="customer_id" ref="demo_rc_customer"/>
+            <field name="resellerclub_order_id">D-123456</field>
+            <field name="status">active</field>
+            <field name="registration_date" eval="datetime.date.today() - datetime.timedelta(days=365)"/>
+            <field name="expiration_date" eval="datetime.date.today() + datetime.timedelta(days=180)"/>
+            <field name="years">2</field>
+            <field name="auto_renew">True</field>
+            <field name="privacy_protection">True</field>
+            <field name="theft_protection">True</field>
+            <field name="ns1">ns1.demo.com</field>
+            <field name="ns2">ns2.demo.com</field>
+        </record>
+
+        <record id="demo_domain_2" model="resellerclub.domain">
+            <field name="domain_name">mysite-demo.net</field>
+            <field name="customer_id" ref="demo_rc_customer"/>
+            <field name="resellerclub_order_id">D-123457</field>
+            <field name="status">active</field>
+            <field name="registration_date" eval="datetime.date.today() - datetime.timedelta(days=200)"/>
+            <field name="expiration_date" eval="datetime.date.today() + datetime.timedelta(days=25)"/>
+            <field name="years">1</field>
+            <field name="ns1">ns1.demo.com</field>
+            <field name="ns2">ns2.demo.com</field>
+        </record>
+
+        <record id="demo_domain_3" model="resellerclub.domain">
+            <field name="domain_name">expired-demo.org</field>
+            <field name="customer_id" ref="demo_rc_customer"/>
+            <field name="resellerclub_order_id">D-123458</field>
+            <field name="status">expired</field>
+            <field name="registration_date" eval="datetime.date.today() - datetime.timedelta(days=400)"/>
+            <field name="expiration_date" eval="datetime.date.today() - datetime.timedelta(days=5)"/>
+            <field name="years">1</field>
+        </record>
+
+        <!-- Demo Hosting -->
+        <record id="demo_hosting_1" model="resellerclub.hosting">
+            <field name="domain_name">example-demo.com</field>
+            <field name="customer_id" ref="demo_rc_customer"/>
+            <field name="resellerclub_order_id">H-234567</field>
+            <field name="hosting_type">multi</field>
+            <field name="plan_name">Premium Hosting</field>
+            <field name="status">active</field>
+            <field name="creation_date" eval="datetime.date.today() - datetime.timedelta(days=365)"/>
+            <field name="expiration_date" eval="datetime.date.today() + datetime.timedelta(days=90)"/>
+            <field name="months">12</field>
+            <field name="auto_renew">True</field>
+            <field name="disk_space">50 GB</field>
+            <field name="bandwidth">Unlimited</field>
+            <field name="email_accounts">100</field>
+            <field name="databases">25</field>
+        </record>
+
+        <record id="demo_hosting_2" model="resellerclub.hosting">
+            <field name="domain_name">mysite-demo.net</field>
+            <field name="customer_id" ref="demo_rc_customer"/>
+            <field name="resellerclub_order_id">H-234568</field>
+            <field name="hosting_type">email</field>
+            <field name="plan_name">Business Email</field>
+            <field name="status">active</field>
+            <field name="creation_date" eval="datetime.date.today() - datetime.timedelta(days=180)"/>
+            <field name="expiration_date" eval="datetime.date.today() + datetime.timedelta(days=185)"/>
+            <field name="months">12</field>
+            <field name="email_accounts">25</field>
+        </record>
+
+        <!-- Demo SSL Certificate -->
+        <record id="demo_ssl_1" model="resellerclub.ssl">
+            <field name="domain_name">example-demo.com</field>
+            <field name="customer_id" ref="demo_rc_customer"/>
+            <field name="resellerclub_order_id">S-345678</field>
+            <field name="ssl_type">dv</field>
+            <field name="brand">comodo</field>
+            <field name="plan_name">PositiveSSL</field>
+            <field name="status">active</field>
+            <field name="issuance_date" eval="datetime.date.today() - datetime.timedelta(days=180)"/>
+            <field name="expiration_date" eval="datetime.date.today() + datetime.timedelta(days=185)"/>
+            <field name="months">12</field>
+        </record>
+
+        <!-- Demo DNS Records -->
+        <record id="demo_dns_record_1" model="resellerclub.dns.record">
+            <field name="domain_id" ref="demo_domain_1"/>
+            <field name="record_type">A</field>
+            <field name="host">@</field>
+            <field name="value">192.168.1.1</field>
+            <field name="ttl">14400</field>
+            <field name="is_synced">True</field>
+        </record>
+
+        <record id="demo_dns_record_2" model="resellerclub.dns.record">
+            <field name="domain_id" ref="demo_domain_1"/>
+            <field name="record_type">A</field>
+            <field name="host">www</field>
+            <field name="value">192.168.1.1</field>
+            <field name="ttl">14400</field>
+            <field name="is_synced">True</field>
+        </record>
+
+        <record id="demo_dns_record_3" model="resellerclub.dns.record">
+            <field name="domain_id" ref="demo_domain_1"/>
+            <field name="record_type">MX</field>
+            <field name="host">@</field>
+            <field name="value">mail.example-demo.com</field>
+            <field name="ttl">14400</field>
+            <field name="priority">10</field>
+            <field name="is_synced">True</field>
+        </record>
+
+        <!-- Demo DNS Template -->
+        <record id="demo_dns_template" model="resellerclub.dns.template">
+            <field name="name">Standard Website</field>
+            <field name="description">Standard DNS configuration for websites with email</field>
+            <field name="is_active">True</field>
+        </record>
+
+        <record id="demo_dns_template_record_1" model="resellerclub.dns.template.record">
+            <field name="template_id" ref="demo_dns_template"/>
+            <field name="record_type">A</field>
+            <field name="host">@</field>
+            <field name="value">YOUR_IP_HERE</field>
+            <field name="ttl">14400</field>
+        </record>
+
+        <record id="demo_dns_template_record_2" model="resellerclub.dns.template.record">
+            <field name="template_id" ref="demo_dns_template"/>
+            <field name="record_type">CNAME</field>
+            <field name="host">www</field>
+            <field name="value">{domain}</field>
+            <field name="ttl">14400</field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Partner Form Inherit -->
+    <record id="res_partner_form_view_inherit_resellerclub" model="ir.ui.view">
+        <field name="name">res.partner.form.inherit.resellerclub</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <!-- Add button box buttons -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_rc_customer" type="object"
+                        class="oe_stat_button" icon="fa-cloud"
+                        groups="resellerclub_integration.group_resellerclub_user">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text" invisible="has_rc_account">
+                            Create RC Account
+                        </span>
+                        <span class="o_stat_text" invisible="not has_rc_account">
+                            RC Customer
+                        </span>
+                    </div>
+                    <field name="has_rc_account" invisible="1"/>
+                </button>
+                <button name="action_view_rc_domains" type="object"
+                        class="oe_stat_button" icon="fa-globe"
+                        invisible="rc_domains_count == 0"
+                        groups="resellerclub_integration.group_resellerclub_user">
+                    <field name="rc_domains_count" widget="statinfo" string="Domains"/>
+                </button>
+                <button name="action_view_rc_hosting" type="object"
+                        class="oe_stat_button" icon="fa-server"
+                        invisible="rc_hosting_count == 0"
+                        groups="resellerclub_integration.group_resellerclub_user">
+                    <field name="rc_hosting_count" widget="statinfo" string="Hosting"/>
+                </button>
+                <button name="action_view_rc_ssl" type="object"
+                        class="oe_stat_button" icon="fa-lock"
+                        invisible="rc_ssl_count == 0"
+                        groups="resellerclub_integration.group_resellerclub_user">
+                    <field name="rc_ssl_count" widget="statinfo" string="SSL"/>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Partner List Inherit -->
+    <record id="res_partner_list_view_inherit_resellerclub" model="ir.ui.view">
+        <field name="name">res.partner.list.inherit.resellerclub</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='email']" position="after">
+                <field name="has_rc_account" optional="hide" widget="boolean"/>
+                <field name="rc_total_services" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Partner Search Inherit -->
+    <record id="res_partner_search_view_inherit_resellerclub" model="ir.ui.view">
+        <field name="name">res.partner.search.inherit.resellerclub</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_res_partner_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='inactive']" position="after">
+                <separator/>
+                <filter name="filter_rc_customers" string="RC Customers"
+                        domain="[('has_rc_account', '=', True)]"/>
+                <filter name="filter_rc_services" string="Has RC Services"
+                        domain="[('rc_total_services', '&gt;', 0)]"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

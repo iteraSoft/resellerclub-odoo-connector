@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="domain_renew_wizard_view_form" model="ir.ui.view">
+        <field name="name">resellerclub.domain.renew.wizard.form</field>
+        <field name="model">resellerclub.domain.renew.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Renew Domain">
+                <group>
+                    <group string="Domain Information">
+                        <field name="domain_id" invisible="1"/>
+                        <field name="domain_name"/>
+                        <field name="current_expiration"/>
+                    </group>
+                    <group string="Renewal">
+                        <field name="years"/>
+                        <field name="new_expiration"/>
+                        <field name="estimated_cost" widget="monetary"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_renew" type="object"
+                            string="Renew Domain" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

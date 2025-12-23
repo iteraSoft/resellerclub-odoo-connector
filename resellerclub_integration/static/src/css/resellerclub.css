@@ -1,0 +1,216 @@
+/* ResellerClub Integration Styles */
+
+/* Dashboard Cards */
+.o_rc_dashboard .o_rc_card {
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.o_rc_dashboard .o_rc_card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Status Badges */
+.o_rc_status_active {
+    background-color: #28a745 !important;
+    color: white !important;
+}
+
+.o_rc_status_expired {
+    background-color: #dc3545 !important;
+    color: white !important;
+}
+
+.o_rc_status_warning {
+    background-color: #ffc107 !important;
+    color: #212529 !important;
+}
+
+.o_rc_status_pending {
+    background-color: #17a2b8 !important;
+    color: white !important;
+}
+
+/* Expiry Status Colors */
+.o_rc_expiry_ok {
+    color: #28a745;
+}
+
+.o_rc_expiry_warning {
+    color: #ffc107;
+}
+
+.o_rc_expiry_critical {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+/* Domain Availability Checker */
+.o_rc_domain_checker {
+    margin-bottom: 1rem;
+}
+
+.o_rc_domain_checker .o_rc_availability {
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    margin-top: 0.5rem;
+}
+
+.o_rc_domain_checker .o_rc_available {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.o_rc_domain_checker .o_rc_unavailable {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* DNS Records Table */
+.o_rc_dns_table {
+    font-family: monospace;
+    font-size: 0.9rem;
+}
+
+.o_rc_dns_table .o_rc_record_type {
+    font-weight: bold;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    background-color: #e9ecef;
+}
+
+/* Nameserver List */
+.o_rc_nameservers {
+    list-style: none;
+    padding: 0;
+}
+
+.o_rc_nameservers li {
+    padding: 0.5rem;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+    font-family: monospace;
+}
+
+/* Service Cards */
+.o_rc_service_card {
+    border-left: 4px solid #875A7B;
+}
+
+.o_rc_service_card.o_rc_domain {
+    border-left-color: #17a2b8;
+}
+
+.o_rc_service_card.o_rc_hosting {
+    border-left-color: #28a745;
+}
+
+.o_rc_service_card.o_rc_ssl {
+    border-left-color: #ffc107;
+}
+
+/* Sync Status Indicator */
+.o_rc_sync_indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.o_rc_sync_indicator .o_rc_sync_icon {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.o_rc_sync_indicator .o_rc_synced {
+    background-color: #28a745;
+}
+
+.o_rc_sync_indicator .o_rc_pending {
+    background-color: #ffc107;
+}
+
+.o_rc_sync_indicator .o_rc_error {
+    background-color: #dc3545;
+}
+
+/* API Log Viewer */
+.o_rc_api_log {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.o_rc_api_log pre {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+/* Form Sections */
+.o_rc_form_section {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+.o_rc_form_section h4 {
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #dee2e6;
+}
+
+/* Balance Widget */
+.o_rc_balance_widget {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background-color: #e7f3ff;
+    border-radius: 4px;
+    font-size: 1.1rem;
+}
+
+.o_rc_balance_widget .o_rc_balance_amount {
+    font-weight: bold;
+    color: #0066cc;
+}
+
+/* Stat buttons customization */
+.o_kanban_record .o_rc_stat_button {
+    min-width: 80px;
+}
+
+/* Loading state */
+.o_rc_loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.o_rc_loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 24px;
+    height: 24px;
+    margin: -12px 0 0 -12px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #875A7B;
+    border-radius: 50%;
+    animation: o_rc_spin 1s linear infinite;
+}
+
+@keyframes o_rc_spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

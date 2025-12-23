@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Domain Expiry Notification -->
+        <record id="mail_template_domain_expiry" model="mail.template">
+            <field name="name">ResellerClub: Domain Expiry Reminder</field>
+            <field name="model_id" ref="model_resellerclub_domain"/>
+            <field name="email_from">{{ (object.company_id.email or user.email_formatted) }}</field>
+            <field name="email_to">{{ object.partner_id.email }}</field>
+            <field name="subject">Domain Expiry Reminder: {{ object.domain_name }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-family: Arial, Helvetica, sans-serif;">
+    <table style="width: 100%; max-width: 600px; margin: auto; border-collapse: collapse;">
+        <tr>
+            <td style="padding: 20px; background-color: #875A7B; text-align: center;">
+                <h1 style="color: white; margin: 0;">Domain Expiry Reminder</h1>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding: 30px; background-color: #f9f9f9;">
+                <p>Dear {{ object.partner_id.name }},</p>
+
+                <p>This is a reminder that your domain <strong>{{ object.domain_name }}</strong> will expire on <strong>{{ object.expiration_date }}</strong>.</p>
+
+                <div style="background-color: #fff3cd; border: 1px solid #ffc107; border-radius: 4px; padding: 15px; margin: 20px 0;">
+                    <p style="margin: 0;"><strong>Domain:</strong> {{ object.domain_name }}</p>
+                    <p style="margin: 5px 0 0 0;"><strong>Expiration Date:</strong> {{ object.expiration_date }}</p>
+                    <p style="margin: 5px 0 0 0;"><strong>Days Remaining:</strong> {{ object.days_until_expiry }} days</p>
+                </div>
+
+                <p>To avoid losing your domain, please renew it before the expiration date.</p>
+
+                <p style="text-align: center; margin: 30px 0;">
+                    <a href="/my/domains" style="background-color: #875A7B; color: white; padding: 12px 30px; text-decoration: none; border-radius: 4px; display: inline-block;">Renew Domain</a>
+                </p>
+
+                <p>If you have any questions, please don't hesitate to contact us.</p>
+
+                <p>Best regards,<br/>
+                {{ object.company_id.name }}</p>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding: 15px; background-color: #eeeeee; text-align: center; font-size: 12px; color: #666;">
+                <p style="margin: 0;">This is an automated message from {{ object.company_id.name }}</p>
+            </td>
+        </tr>
+    </table>
+</div>
+            </field>
+            <field name="lang">{{ object.partner_id.lang }}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+
+        <!-- SSL Expiry Notification -->
+        <record id="mail_template_ssl_expiry" model="mail.template">
+            <field name="name">ResellerClub: SSL Expiry Reminder</field>
+            <field name="model_id" ref="model_resellerclub_ssl"/>
+            <field name="email_from">{{ (object.company_id.email or user.email_formatted) }}</field>
+            <field name="email_to">{{ object.partner_id.email }}</field>
+            <field name="subject">SSL Certificate Expiry Reminder: {{ object.domain_name }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-family: Arial, Helvetica, sans-serif;">
+    <table style="width: 100%; max-width: 600px; margin: auto; border-collapse: collapse;">
+        <tr>
+            <td style="padding: 20px; background-color: #28a745; text-align: center;">
+                <h1 style="color: white; margin: 0;">SSL Certificate Expiry Reminder</h1>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding: 30px; background-color: #f9f9f9;">
+                <p>Dear {{ object.partner_id.name }},</p>
+
+                <p>This is a reminder that your SSL certificate for <strong>{{ object.domain_name }}</strong> will expire on <strong>{{ object.expiration_date }}</strong>.</p>
+
+                <div style="background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 4px; padding: 15px; margin: 20px 0;">
+                    <p style="margin: 0;"><strong>Domain:</strong> {{ object.domain_name }}</p>
+                    <p style="margin: 5px 0 0 0;"><strong>Certificate Type:</strong> {{ object.ssl_type }}</p>
+                    <p style="margin: 5px 0 0 0;"><strong>Expiration Date:</strong> {{ object.expiration_date }}</p>
+                    <p style="margin: 5px 0 0 0;"><strong>Days Remaining:</strong> {{ object.days_until_expiry }} days</p>
+                </div>
+
+                <p><strong>Important:</strong> An expired SSL certificate will cause security warnings for your website visitors. Please renew it before the expiration date.</p>
+
+                <p style="text-align: center; margin: 30px 0;">
+                    <a href="/my/ssl" style="background-color: #28a745; color: white; padding: 12px 30px; text-decoration: none; border-radius: 4px; display: inline-block;">Renew SSL Certificate</a>
+                </p>
+
+                <p>If you have any questions, please don't hesitate to contact us.</p>
+
+                <p>Best regards,<br/>
+                {{ object.company_id.name }}</p>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding: 15px; background-color: #eeeeee; text-align: center; font-size: 12px; color: #666;">
+                <p style="margin: 0;">This is an automated message from {{ object.company_id.name }}</p>
+            </td>
+        </tr>
+    </table>
+</div>
+            </field>
+            <field name="lang">{{ object.partner_id.lang }}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+
+        <!-- Hosting Expiry Notification -->
+        <record id="mail_template_hosting_expiry" model="mail.template">
+            <field name="name">ResellerClub: Hosting Expiry Reminder</field>
+            <field name="model_id" ref="model_resellerclub_hosting"/>
+            <field name="email_from">{{ (object.company_id.email or user.email_formatted) }}</field>
+            <field name="email_to">{{ object.partner_id.email }}</field>
+            <field name="subject">Hosting Expiry Reminder: {{ object.domain_name }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-family: Arial, Helvetica, sans-serif;">
+    <table style="width: 100%; max-width: 600px; margin: auto; border-collapse: collapse;">
+        <tr>
+            <td style="padding: 20px; background-color: #17a2b8; text-align: center;">
+                <h1 style="color: white; margin: 0;">Hosting Expiry Reminder</h1>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding: 30px; background-color: #f9f9f9;">
+                <p>Dear {{ object.partner_id.name }},</p>
+
+                <p>This is a reminder that your hosting plan for <strong>{{ object.domain_name }}</strong> will expire on <strong>{{ object.expiration_date }}</strong>.</p>
+
+                <div style="background-color: #d1ecf1; border: 1px solid #bee5eb; border-radius: 4px; padding: 15px; margin: 20px 0;">
+                    <p style="margin: 0;"><strong>Domain:</strong> {{ object.domain_name }}</p>
+                    <p style="margin: 5px 0 0 0;"><strong>Plan:</strong> {{ object.plan_name }}</p>
+                    <p style="margin: 5px 0 0 0;"><strong>Expiration Date:</strong> {{ object.expiration_date }}</p>
+                    <p style="margin: 5px 0 0 0;"><strong>Days Remaining:</strong> {{ object.days_until_expiry }} days</p>
+                </div>
+
+                <p>To avoid service interruption, please renew your hosting plan before the expiration date.</p>
+
+                <p style="text-align: center; margin: 30px 0;">
+                    <a href="/my/hosting" style="background-color: #17a2b8; color: white; padding: 12px 30px; text-decoration: none; border-radius: 4px; display: inline-block;">Renew Hosting</a>
+                </p>
+
+                <p>If you have any questions, please don't hesitate to contact us.</p>
+
+                <p>Best regards,<br/>
+                {{ object.company_id.name }}</p>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding: 15px; background-color: #eeeeee; text-align: center; font-size: 12px; color: #666;">
+                <p style="margin: 0;">This is an automated message from {{ object.company_id.name }}</p>
+            </td>
+        </tr>
+    </table>
+</div>
+            </field>
+            <field name="lang">{{ object.partner_id.lang }}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+    </data>
+</odoo>

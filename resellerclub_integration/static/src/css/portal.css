@@ -1,0 +1,167 @@
+/* ResellerClub Portal Styles */
+
+/* Service Cards */
+.o_portal_rc_service_card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.o_portal_rc_service_card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Status Badges */
+.o_portal_rc_status {
+    display: inline-block;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border-radius: 4px;
+}
+
+.o_portal_rc_status.active {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.o_portal_rc_status.expired {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.o_portal_rc_status.pending {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+/* Expiry Warning Banner */
+.o_portal_rc_expiry_warning {
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+    border-radius: 4px;
+    background-color: #fff3cd;
+    border: 1px solid #ffc107;
+}
+
+.o_portal_rc_expiry_warning.critical {
+    background-color: #f8d7da;
+    border-color: #dc3545;
+}
+
+/* Service Table */
+.o_portal_rc_table {
+    margin-bottom: 0;
+}
+
+.o_portal_rc_table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    border-bottom-width: 2px;
+}
+
+.o_portal_rc_table td {
+    vertical-align: middle;
+}
+
+/* Domain Detail Cards */
+.o_portal_rc_detail_section {
+    margin-bottom: 1.5rem;
+}
+
+.o_portal_rc_detail_section h5 {
+    color: #495057;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #dee2e6;
+}
+
+/* Nameserver Display */
+.o_portal_rc_nameservers {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.o_portal_rc_nameservers li {
+    padding: 0.5rem 0.75rem;
+    background-color: #f8f9fa;
+    border-left: 3px solid #17a2b8;
+    margin-bottom: 0.5rem;
+    font-family: 'SFMono-Regular', Menlo, Monaco, Consolas, monospace;
+    font-size: 0.9rem;
+}
+
+/* Action Buttons */
+.o_portal_rc_actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.o_portal_rc_actions .btn {
+    min-width: 100px;
+}
+
+/* SSL Certificate Display */
+.o_portal_rc_certificate {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.85rem;
+    white-space: pre-wrap;
+    word-break: break-all;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+/* Resource Usage Bars */
+.o_portal_rc_resource_bar {
+    height: 8px;
+    border-radius: 4px;
+    background-color: #e9ecef;
+    overflow: hidden;
+}
+
+.o_portal_rc_resource_bar .progress {
+    height: 100%;
+    border-radius: 4px;
+}
+
+/* Empty State */
+.o_portal_rc_empty {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #6c757d;
+}
+
+.o_portal_rc_empty i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.o_portal_rc_empty h5 {
+    margin-bottom: 0.5rem;
+}
+
+.o_portal_rc_empty p {
+    margin-bottom: 1.5rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .o_portal_rc_table {
+        font-size: 0.9rem;
+    }
+
+    .o_portal_rc_actions {
+        flex-direction: column;
+    }
+
+    .o_portal_rc_actions .btn {
+        width: 100%;
+    }
+}

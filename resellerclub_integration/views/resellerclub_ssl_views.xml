@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- SSL Tree View -->
+    <record id="resellerclub_ssl_view_list" model="ir.ui.view">
+        <field name="name">resellerclub.ssl.list</field>
+        <field name="model">resellerclub.ssl</field>
+        <field name="arch" type="xml">
+            <list string="SSL Certificates"
+                  decoration-danger="expiry_status == 'expired'"
+                  decoration-warning="expiry_status in ['warning', 'critical']">
+                <field name="domain_name"/>
+                <field name="ssl_type" widget="badge"/>
+                <field name="brand"/>
+                <field name="partner_id"/>
+                <field name="status" widget="badge"
+                       decoration-success="status == 'active'"
+                       decoration-danger="status in ['expired', 'cancelled', 'revoked']"
+                       decoration-info="status in ['pending', 'pending_issuance']"/>
+                <field name="issuance_date"/>
+                <field name="expiration_date"/>
+                <field name="days_until_expiry"/>
+                <field name="validation_status"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- SSL Form View -->
+    <record id="resellerclub_ssl_view_form" model="ir.ui.view">
+        <field name="name">resellerclub.ssl.form</field>
+        <field name="model">resellerclub.ssl</field>
+        <field name="arch" type="xml">
+            <form string="SSL Certificate">
+                <header>
+                    <button name="action_order_ssl" type="object"
+                            string="Order SSL" class="btn-primary"
+                            invisible="resellerclub_order_id"/>
+                    <button name="action_generate_csr" type="object"
+                            string="Generate CSR" class="btn-secondary"
+                            invisible="status != 'pending_issuance' or csr"/>
+                    <button name="action_enroll_certificate" type="object"
+                            string="Enroll Certificate" class="btn-primary"
+                            invisible="status != 'pending_issuance' or not csr"/>
+                    <button name="action_sync_from_resellerclub" type="object"
+                            string="Sync" class="btn-secondary"
+                            invisible="not resellerclub_order_id"/>
+                    <button name="action_renew_ssl" type="object"
+                            string="Renew" class="btn-primary"
+                            invisible="status != 'active'"/>
+                    <button name="action_download_certificate" type="object"
+                            string="Download Certificate" class="btn-secondary"
+                            invisible="not certificate"/>
+                    <field name="status" widget="statusbar"
+                           statusbar_visible="pending,pending_issuance,active"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Expired" bg_color="text-bg-danger"
+                            invisible="expiry_status != 'expired'"/>
+                    <widget name="web_ribbon" title="Pending Validation" bg_color="text-bg-info"
+                            invisible="status != 'pending_issuance'"/>
+                    <div class="oe_title">
+                        <label for="domain_name"/>
+                        <h1>
+                            <field name="domain_name" placeholder="example.com"
+                                   readonly="resellerclub_order_id"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Certificate Details">
+                            <field name="ssl_type"/>
+                            <field name="brand"/>
+                            <field name="plan_id" invisible="resellerclub_order_id"/>
+                            <field name="plan_name"/>
+                            <field name="months" invisible="resellerclub_order_id"/>
+                        </group>
+                        <group string="Status">
+                            <field name="customer_id"/>
+                            <field name="partner_id"/>
+                            <field name="issuance_date"/>
+                            <field name="expiration_date"/>
+                            <field name="days_until_expiry"/>
+                            <field name="validation_status"/>
+                            <field name="resellerclub_order_id" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Validation" name="validation">
+                            <group>
+                                <group>
+                                    <field name="validation_method"/>
+                                    <field name="validation_email"
+                                           invisible="validation_method != 'email'"
+                                           placeholder="admin@example.com"/>
+                                </group>
+                            </group>
+                            <div class="alert alert-info" role="alert"
+                                 invisible="status != 'pending_issuance'">
+                                <strong>Validation Required:</strong>
+                                Complete domain validation to activate your SSL certificate.
+                                Check your email or follow the DNS/HTTP validation instructions.
+                            </div>
+                        </page>
+                        <page string="Organization" name="organization"
+                              invisible="ssl_type not in ['ov', 'ev']">
+                            <group>
+                                <group>
+                                    <field name="organization_name"/>
+                                    <field name="organization_unit"/>
+                                </group>
+                                <group>
+                                    <field name="city"/>
+                                    <field name="state"/>
+                                    <field name="country_code"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Additional Domains" name="san"
+                              invisible="ssl_type not in ['multi']">
+                            <field name="additional_domains"
+                                   placeholder="Enter additional domains, one per line..."/>
+                        </page>
+                        <page string="Certificate Data" name="cert_data"
+                              invisible="not csr and not certificate">
+                            <group string="CSR (Certificate Signing Request)">
+                                <field name="csr" nolabel="1"/>
+                            </group>
+                            <group string="Private Key" invisible="not private_key">
+                                <field name="private_key" nolabel="1" password="True"/>
+                                <div class="alert alert-warning" role="alert">
+                                    <strong>Security Warning:</strong>
+                                    Keep your private key confidential. Never share it.
+                                </div>
+                            </group>
+                            <group string="Certificate" invisible="not certificate">
+                                <field name="certificate" nolabel="1"/>
+                            </group>
+                            <group string="CA Bundle" invisible="not ca_bundle">
+                                <field name="ca_bundle" nolabel="1"/>
+                            </group>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes" placeholder="Internal notes..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- SSL Search View -->
+    <record id="resellerclub_ssl_view_search" model="ir.ui.view">
+        <field name="name">resellerclub.ssl.search</field>
+        <field name="model">resellerclub.ssl</field>
+        <field name="arch" type="xml">
+            <search string="Search SSL Certificates">
+                <field name="domain_name"/>
+                <field name="plan_name"/>
+                <field name="partner_id"/>
+                <separator/>
+                <filter name="filter_active" string="Active" domain="[('status', '=', 'active')]"/>
+                <filter name="filter_pending" string="Pending Issuance" domain="[('status', '=', 'pending_issuance')]"/>
+                <filter name="filter_expired" string="Expired" domain="[('status', '=', 'expired')]"/>
+                <separator/>
+                <filter name="filter_dv" string="DV Certificates" domain="[('ssl_type', '=', 'dv')]"/>
+                <filter name="filter_ov" string="OV Certificates" domain="[('ssl_type', '=', 'ov')]"/>
+                <filter name="filter_ev" string="EV Certificates" domain="[('ssl_type', '=', 'ev')]"/>
+                <filter name="filter_wildcard" string="Wildcard" domain="[('ssl_type', '=', 'wildcard')]"/>
+                <separator/>
+                <filter name="filter_expiring" string="Expiring Soon"
+                        domain="[('days_until_expiry', '&lt;=', 30), ('days_until_expiry', '&gt;', 0)]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter name="group_type" string="Certificate Type" context="{'group_by': 'ssl_type'}"/>
+                    <filter name="group_brand" string="Brand" context="{'group_by': 'brand'}"/>
+                    <filter name="group_status" string="Status" context="{'group_by': 'status'}"/>
+                    <filter name="group_customer" string="Customer" context="{'group_by': 'partner_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- SSL Action -->
+    <record id="action_resellerclub_ssl" model="ir.actions.act_window">
+        <field name="name">SSL Certificates</field>
+        <field name="res_model">resellerclub.ssl</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="resellerclub_ssl_view_search"/>
+        <field name="context">{'search_default_filter_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Order your first SSL certificate
+            </p>
+            <p>
+                Manage SSL certificates from Comodo, Thawte, GeoTrust, and more through ResellerClub.
+            </p>
+        </field>
+    </record>
+</odoo>
