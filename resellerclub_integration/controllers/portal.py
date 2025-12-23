@@ -684,3 +684,370 @@ class ResellerClubPortal(CustomerPortal):
         except Exception as e:
             _logger.error("Failed to sync service: %s", str(e))
             return {'success': False, 'error': str(e)}
+
+    # =============================================
+    # CONTROL PANEL SSO (Single Sign-On)
+    # =============================================
+
+    @http.route('/my/hosting/<int:hosting_id>/cpanel', type='http', auth='user', website=True)
+    def portal_hosting_cpanel_sso(self, hosting_id, **kw):
+        """Redirect to cPanel via SSO."""
+        partner = request.env.user.partner_id
+        hosting = request.env['resellerclub.hosting'].search([
+            ('id', '=', hosting_id),
+            ('partner_id', '=', partner.id),
+            ('status', '=', 'active'),
+        ], limit=1)
+
+        if not hosting:
+            return request.redirect('/my/hosting?error=not_found')
+
+        try:
+            api = request.env['resellerclub.api']
+            result = api.hosting_get_cpanel_url(hosting.rc_order_id)
+            if result and isinstance(result, dict) and result.get('url'):
+                return request.redirect(result['url'])
+            elif isinstance(result, str):
+                return request.redirect(result)
+            else:
+                return request.redirect(f'/my/hosting/{hosting_id}?error=sso_failed')
+        except Exception as e:
+            _logger.error("Failed to get cPanel SSO URL: %s", str(e))
+            return request.redirect(f'/my/hosting/{hosting_id}?error=sso_failed')
+
+    @http.route('/my/hosting/<int:hosting_id>/webmail', type='http', auth='user', website=True)
+    def portal_hosting_webmail_sso(self, hosting_id, **kw):
+        """Redirect to webmail via SSO."""
+        partner = request.env.user.partner_id
+        hosting = request.env['resellerclub.hosting'].search([
+            ('id', '=', hosting_id),
+            ('partner_id', '=', partner.id),
+            ('status', '=', 'active'),
+        ], limit=1)
+
+        if not hosting:
+            return request.redirect('/my/hosting?error=not_found')
+
+        try:
+            api = request.env['resellerclub.api']
+            result = api.hosting_get_webmail_url(hosting.rc_order_id)
+            if result and isinstance(result, dict) and result.get('url'):
+                return request.redirect(result['url'])
+            elif isinstance(result, str):
+                return request.redirect(result)
+            else:
+                return request.redirect(f'/my/hosting/{hosting_id}?error=sso_failed')
+        except Exception as e:
+            _logger.error("Failed to get webmail SSO URL: %s", str(e))
+            return request.redirect(f'/my/hosting/{hosting_id}?error=sso_failed')
+
+    # =============================================
+    # DOMAIN FORWARDING
+    # =============================================
+
+    @http.route('/my/domains/<int:domain_id>/forwarding', type='http', auth='user', website=True)
+    def portal_domain_forwarding(self, domain_id, **kw):
+        """Display domain forwarding configuration."""
+        partner = request.env.user.partner_id
+        domain = request.env['resellerclub.domain'].search([
+            ('id', '=', domain_id),
+            ('partner_id', '=', partner.id),
+        ], limit=1)
+
+        if not domain:
+            return request.redirect('/my/domains')
+
+        # Get current forwarding settings
+        forwarding = None
+        try:
+            api = request.env['resellerclub.api']
+            forwarding = api.domain_forwarding_get(domain.rc_order_id)
+        except Exception as e:
+            _logger.warning("Could not get forwarding settings: %s", str(e))
+
+        values = {
+            'domain': domain,
+            'forwarding': forwarding,
+            'page_name': 'domain_forwarding',
+        }
+
+        return request.render('resellerclub_integration.portal_domain_forwarding', values)
+
+    @http.route('/my/domains/<int:domain_id>/forwarding/save', type='json', auth='user', website=True)
+    def portal_domain_forwarding_save(self, domain_id, destination_url='', url_masking=False, **kw):
+        """Save domain forwarding settings."""
+        partner = request.env.user.partner_id
+        domain = request.env['resellerclub.domain'].search([
+            ('id', '=', domain_id),
+            ('partner_id', '=', partner.id),
+        ], limit=1)
+
+        if not domain:
+            return {'success': False, 'error': _('Domain not found')}
+
+        if not destination_url:
+            return {'success': False, 'error': _('Destination URL is required')}
+
+        # Validate URL format
+        if not destination_url.startswith(('http://', 'https://')):
+            destination_url = 'http://' + destination_url
+
+        try:
+            api = request.env['resellerclub.api']
+            api.domain_forwarding_setup(
+                domain.rc_order_id,
+                destination_url,
+                url_masking=url_masking
+            )
+            return {'success': True, 'message': _('Domain forwarding configured successfully')}
+        except Exception as e:
+            _logger.error("Failed to setup forwarding: %s", str(e))
+            return {'success': False, 'error': str(e)}
+
+    @http.route('/my/domains/<int:domain_id>/forwarding/delete', type='json', auth='user', website=True)
+    def portal_domain_forwarding_delete(self, domain_id, **kw):
+        """Delete domain forwarding."""
+        partner = request.env.user.partner_id
+        domain = request.env['resellerclub.domain'].search([
+            ('id', '=', domain_id),
+            ('partner_id', '=', partner.id),
+        ], limit=1)
+
+        if not domain:
+            return {'success': False, 'error': _('Domain not found')}
+
+        try:
+            api = request.env['resellerclub.api']
+            api.domain_forwarding_delete(domain.rc_order_id)
+            return {'success': True, 'message': _('Domain forwarding removed')}
+        except Exception as e:
+            _logger.error("Failed to delete forwarding: %s", str(e))
+            return {'success': False, 'error': str(e)}
+
+    # =============================================
+    # WHOIS / CONTACT MANAGEMENT
+    # =============================================
+
+    @http.route('/my/domains/<int:domain_id>/contacts', type='http', auth='user', website=True)
+    def portal_domain_contacts(self, domain_id, **kw):
+        """Display domain contact (WHOIS) information."""
+        partner = request.env.user.partner_id
+        domain = request.env['resellerclub.domain'].search([
+            ('id', '=', domain_id),
+            ('partner_id', '=', partner.id),
+        ], limit=1)
+
+        if not domain:
+            return request.redirect('/my/domains')
+
+        # Get contacts from ResellerClub customer record
+        customer = request.env['resellerclub.customer'].search([
+            ('partner_id', '=', partner.id)
+        ], limit=1)
+
+        contacts = []
+        if customer:
+            try:
+                api = request.env['resellerclub.api']
+                contacts = api.contact_search(customer.rc_customer_id)
+            except Exception as e:
+                _logger.warning("Could not get contacts: %s", str(e))
+
+        values = {
+            'domain': domain,
+            'contacts': contacts,
+            'page_name': 'domain_contacts',
+        }
+
+        return request.render('resellerclub_integration.portal_domain_contacts', values)
+
+    @http.route('/my/domains/<int:domain_id>/contacts/update', type='json', auth='user', website=True)
+    def portal_domain_contacts_update(self, domain_id, contact_type='registrant', **contact_data):
+        """Update domain contact information."""
+        partner = request.env.user.partner_id
+        domain = request.env['resellerclub.domain'].search([
+            ('id', '=', domain_id),
+            ('partner_id', '=', partner.id),
+        ], limit=1)
+
+        if not domain:
+            return {'success': False, 'error': _('Domain not found')}
+
+        # Get customer
+        customer = request.env['resellerclub.customer'].search([
+            ('partner_id', '=', partner.id)
+        ], limit=1)
+
+        if not customer:
+            return {'success': False, 'error': _('Customer record not found')}
+
+        try:
+            api = request.env['resellerclub.api']
+
+            # Create or update contact
+            contact_id = contact_data.pop('contact_id', None)
+
+            if contact_id:
+                # Update existing contact
+                api.contact_modify(contact_id, **contact_data)
+            else:
+                # Create new contact
+                contact_id = api.contact_create(
+                    customer.rc_customer_id,
+                    contact_data.get('email', partner.email),
+                    contact_data.get('name', partner.name),
+                    contact_data.get('company', partner.commercial_company_name or ''),
+                    contact_data.get('address', partner.street or ''),
+                    contact_data.get('city', partner.city or ''),
+                    contact_data.get('state', partner.state_id.name if partner.state_id else ''),
+                    contact_data.get('country_code', partner.country_id.code if partner.country_id else 'US'),
+                    contact_data.get('zipcode', partner.zip or ''),
+                    contact_data.get('phone_cc', '1'),
+                    contact_data.get('phone', partner.phone or ''),
+                )
+
+            # Update domain with the new contact
+            contact_params = {}
+            if contact_type == 'registrant':
+                contact_params['reg_contact_id'] = contact_id
+            elif contact_type == 'admin':
+                contact_params['admin_contact_id'] = contact_id
+            elif contact_type == 'tech':
+                contact_params['tech_contact_id'] = contact_id
+            elif contact_type == 'billing':
+                contact_params['billing_contact_id'] = contact_id
+
+            if contact_params:
+                api.domain_modify_contacts(domain.rc_order_id, **contact_params)
+
+            return {'success': True, 'message': _('Contact updated successfully')}
+        except Exception as e:
+            _logger.error("Failed to update contact: %s", str(e))
+            return {'success': False, 'error': str(e)}
+
+    @http.route('/my/domains/<int:domain_id>/resend-verification', type='json', auth='user', website=True)
+    def portal_domain_resend_verification(self, domain_id, **kw):
+        """Resend domain registrant verification email."""
+        partner = request.env.user.partner_id
+        domain = request.env['resellerclub.domain'].search([
+            ('id', '=', domain_id),
+            ('partner_id', '=', partner.id),
+        ], limit=1)
+
+        if not domain:
+            return {'success': False, 'error': _('Domain not found')}
+
+        try:
+            api = request.env['resellerclub.api']
+            api.domain_resend_verification(domain.rc_order_id)
+            return {'success': True, 'message': _('Verification email sent')}
+        except Exception as e:
+            _logger.error("Failed to resend verification: %s", str(e))
+            return {'success': False, 'error': str(e)}
+
+    # =============================================
+    # CHILD NAMESERVERS (GLUE RECORDS)
+    # =============================================
+
+    @http.route('/my/domains/<int:domain_id>/childns', type='http', auth='user', website=True)
+    def portal_domain_childns(self, domain_id, **kw):
+        """Display child nameserver management page."""
+        partner = request.env.user.partner_id
+        domain = request.env['resellerclub.domain'].search([
+            ('id', '=', domain_id),
+            ('partner_id', '=', partner.id),
+        ], limit=1)
+
+        if not domain:
+            return request.redirect('/my/domains')
+
+        # Get current child nameservers
+        childns = []
+        try:
+            api = request.env['resellerclub.api']
+            childns = api.childns_get(domain.rc_order_id)
+        except Exception as e:
+            _logger.warning("Could not get child nameservers: %s", str(e))
+
+        values = {
+            'domain': domain,
+            'childns': childns if isinstance(childns, list) else [],
+            'page_name': 'domain_childns',
+        }
+
+        return request.render('resellerclub_integration.portal_domain_childns', values)
+
+    @http.route('/my/domains/<int:domain_id>/childns/add', type='json', auth='user', website=True)
+    def portal_domain_childns_add(self, domain_id, hostname='', ip_address='', **kw):
+        """Add a child nameserver."""
+        partner = request.env.user.partner_id
+        domain = request.env['resellerclub.domain'].search([
+            ('id', '=', domain_id),
+            ('partner_id', '=', partner.id),
+        ], limit=1)
+
+        if not domain:
+            return {'success': False, 'error': _('Domain not found')}
+
+        if not hostname or not ip_address:
+            return {'success': False, 'error': _('Hostname and IP address are required')}
+
+        try:
+            api = request.env['resellerclub.api']
+            api.childns_add(domain.rc_order_id, hostname, [ip_address])
+            return {'success': True, 'message': _('Child nameserver added')}
+        except Exception as e:
+            _logger.error("Failed to add child nameserver: %s", str(e))
+            return {'success': False, 'error': str(e)}
+
+    @http.route('/my/domains/<int:domain_id>/childns/delete', type='json', auth='user', website=True)
+    def portal_domain_childns_delete(self, domain_id, hostname='', ip_address='', **kw):
+        """Delete a child nameserver IP."""
+        partner = request.env.user.partner_id
+        domain = request.env['resellerclub.domain'].search([
+            ('id', '=', domain_id),
+            ('partner_id', '=', partner.id),
+        ], limit=1)
+
+        if not domain:
+            return {'success': False, 'error': _('Domain not found')}
+
+        if not hostname or not ip_address:
+            return {'success': False, 'error': _('Hostname and IP address are required')}
+
+        try:
+            api = request.env['resellerclub.api']
+            api.childns_delete(domain.rc_order_id, hostname, ip_address)
+            return {'success': True, 'message': _('Child nameserver removed')}
+        except Exception as e:
+            _logger.error("Failed to delete child nameserver: %s", str(e))
+            return {'success': False, 'error': str(e)}
+
+    # =============================================
+    # GET AUTH CODE (for transfer out)
+    # =============================================
+
+    @http.route('/my/domains/<int:domain_id>/auth-code', type='json', auth='user', website=True)
+    def portal_domain_get_auth_code(self, domain_id, **kw):
+        """Get domain authorization/EPP code for transfer."""
+        partner = request.env.user.partner_id
+        domain = request.env['resellerclub.domain'].search([
+            ('id', '=', domain_id),
+            ('partner_id', '=', partner.id),
+        ], limit=1)
+
+        if not domain:
+            return {'success': False, 'error': _('Domain not found')}
+
+        # Domain must be unlocked to get auth code
+        if domain.is_locked:
+            return {'success': False, 'error': _('Please unlock the domain first to get the authorization code')}
+
+        try:
+            api = request.env['resellerclub.api']
+            result = api.domain_get_auth_code(domain.rc_order_id)
+            auth_code = result if isinstance(result, str) else result.get('authcode', result.get('auth-code', ''))
+            return {'success': True, 'auth_code': auth_code}
+        except Exception as e:
+            _logger.error("Failed to get auth code: %s", str(e))
+            return {'success': False, 'error': str(e)}

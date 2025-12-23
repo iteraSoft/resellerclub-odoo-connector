@@ -727,6 +727,463 @@ class ResellerClubAPI(models.AbstractModel):
         params = {'product-key': product_key}
         return self._api_request('GET', '/products/details', params)
 
+    # ===================
+    # VPS Server API Methods
+    # ===================
+
+    def vps_get_plans(self):
+        """Get available VPS plans."""
+        return self._api_request('GET', '/vps/linux/plans')
+
+    def vps_order(self, domain_name, customer_id, plan_id, months, hostname=None,
+                  root_password=None, os_template=None):
+        """
+        Order a VPS server.
+
+        :param domain_name: Domain name for the VPS
+        :param customer_id: ResellerClub customer ID
+        :param plan_id: VPS plan ID
+        :param months: Number of months
+        :param hostname: Server hostname
+        :param root_password: Root password for the VPS
+        :param os_template: Operating system template
+        :return: Order response
+        """
+        data = {
+            'domain-name': domain_name,
+            'customer-id': customer_id,
+            'plan-id': plan_id,
+            'months': months,
+            'invoice-option': 'NoInvoice',
+        }
+        if hostname:
+            data['hostname'] = hostname
+        if root_password:
+            data['root-passwd'] = root_password
+        if os_template:
+            data['os-template'] = os_template
+        return self._api_request('POST', '/vps/linux/add', data=data)
+
+    def vps_renew(self, order_id, months, exp_date):
+        """Renew a VPS server."""
+        data = {
+            'order-id': order_id,
+            'months': months,
+            'exp-date': exp_date,
+            'invoice-option': 'NoInvoice',
+        }
+        return self._api_request('POST', '/vps/linux/renew', data=data)
+
+    def vps_get_details(self, order_id):
+        """Get VPS server details."""
+        params = {'order-id': order_id}
+        return self._api_request('GET', '/vps/linux/details', params)
+
+    def vps_reboot(self, order_id):
+        """Reboot a VPS server."""
+        data = {'order-id': order_id}
+        return self._api_request('POST', '/vps/linux/reboot', data=data)
+
+    def vps_start(self, order_id):
+        """Start a VPS server."""
+        data = {'order-id': order_id}
+        return self._api_request('POST', '/vps/linux/start', data=data)
+
+    def vps_stop(self, order_id):
+        """Stop a VPS server."""
+        data = {'order-id': order_id}
+        return self._api_request('POST', '/vps/linux/shutdown', data=data)
+
+    def vps_get_os_templates(self):
+        """Get available OS templates for VPS."""
+        return self._api_request('GET', '/vps/linux/os-templates')
+
+    # ===================
+    # Dedicated Server API Methods
+    # ===================
+
+    def dedicated_get_plans(self):
+        """Get available dedicated server plans."""
+        return self._api_request('GET', '/dedserver/plans')
+
+    def dedicated_order(self, customer_id, plan_id, months, os_template=None):
+        """
+        Order a dedicated server.
+
+        :param customer_id: ResellerClub customer ID
+        :param plan_id: Dedicated server plan ID
+        :param months: Number of months
+        :param os_template: Operating system template
+        :return: Order response
+        """
+        data = {
+            'customer-id': customer_id,
+            'plan-id': plan_id,
+            'months': months,
+            'invoice-option': 'NoInvoice',
+        }
+        if os_template:
+            data['os-template'] = os_template
+        return self._api_request('POST', '/dedserver/add', data=data)
+
+    def dedicated_renew(self, order_id, months, exp_date):
+        """Renew a dedicated server."""
+        data = {
+            'order-id': order_id,
+            'months': months,
+            'exp-date': exp_date,
+            'invoice-option': 'NoInvoice',
+        }
+        return self._api_request('POST', '/dedserver/renew', data=data)
+
+    def dedicated_get_details(self, order_id):
+        """Get dedicated server details."""
+        params = {'order-id': order_id}
+        return self._api_request('GET', '/dedserver/details', params)
+
+    def dedicated_reboot(self, order_id):
+        """Reboot a dedicated server."""
+        data = {'order-id': order_id}
+        return self._api_request('POST', '/dedserver/reboot', data=data)
+
+    # ===================
+    # Google Workspace API Methods
+    # ===================
+
+    def gsuite_get_plans(self):
+        """Get available Google Workspace plans."""
+        return self._api_request('GET', '/gapps/plans')
+
+    def gsuite_order(self, domain_name, customer_id, plan_id, months, num_accounts):
+        """
+        Order Google Workspace.
+
+        :param domain_name: Domain name for Google Workspace
+        :param customer_id: ResellerClub customer ID
+        :param plan_id: Google Workspace plan ID
+        :param months: Number of months (usually 12)
+        :param num_accounts: Number of user accounts
+        :return: Order response
+        """
+        data = {
+            'domain-name': domain_name,
+            'customer-id': customer_id,
+            'plan-id': plan_id,
+            'months': months,
+            'number-of-accounts': num_accounts,
+            'invoice-option': 'NoInvoice',
+        }
+        return self._api_request('POST', '/gapps/add', data=data)
+
+    def gsuite_renew(self, order_id, months, exp_date, num_accounts):
+        """Renew Google Workspace subscription."""
+        data = {
+            'order-id': order_id,
+            'months': months,
+            'exp-date': exp_date,
+            'number-of-accounts': num_accounts,
+            'invoice-option': 'NoInvoice',
+        }
+        return self._api_request('POST', '/gapps/renew', data=data)
+
+    def gsuite_get_details(self, order_id):
+        """Get Google Workspace order details."""
+        params = {'order-id': order_id}
+        return self._api_request('GET', '/gapps/details', params)
+
+    def gsuite_add_accounts(self, order_id, num_accounts):
+        """Add user accounts to Google Workspace."""
+        data = {
+            'order-id': order_id,
+            'number-of-accounts': num_accounts,
+            'invoice-option': 'NoInvoice',
+        }
+        return self._api_request('POST', '/gapps/add-accounts', data=data)
+
+    # ===================
+    # SiteLock API Methods
+    # ===================
+
+    def sitelock_get_plans(self):
+        """Get available SiteLock plans."""
+        return self._api_request('GET', '/sitelock/plans')
+
+    def sitelock_order(self, domain_name, customer_id, plan_id, months):
+        """
+        Order SiteLock security service.
+
+        :param domain_name: Domain name to protect
+        :param customer_id: ResellerClub customer ID
+        :param plan_id: SiteLock plan ID
+        :param months: Number of months
+        :return: Order response
+        """
+        data = {
+            'domain-name': domain_name,
+            'customer-id': customer_id,
+            'plan-id': plan_id,
+            'months': months,
+            'invoice-option': 'NoInvoice',
+        }
+        return self._api_request('POST', '/sitelock/add', data=data)
+
+    def sitelock_renew(self, order_id, months, exp_date):
+        """Renew SiteLock subscription."""
+        data = {
+            'order-id': order_id,
+            'months': months,
+            'exp-date': exp_date,
+            'invoice-option': 'NoInvoice',
+        }
+        return self._api_request('POST', '/sitelock/renew', data=data)
+
+    def sitelock_get_details(self, order_id):
+        """Get SiteLock order details."""
+        params = {'order-id': order_id}
+        return self._api_request('GET', '/sitelock/details', params)
+
+    # ===================
+    # CodeGuard API Methods
+    # ===================
+
+    def codeguard_get_plans(self):
+        """Get available CodeGuard backup plans."""
+        return self._api_request('GET', '/codeguard/plans')
+
+    def codeguard_order(self, domain_name, customer_id, plan_id, months):
+        """
+        Order CodeGuard backup service.
+
+        :param domain_name: Domain/site to backup
+        :param customer_id: ResellerClub customer ID
+        :param plan_id: CodeGuard plan ID
+        :param months: Number of months
+        :return: Order response
+        """
+        data = {
+            'domain-name': domain_name,
+            'customer-id': customer_id,
+            'plan-id': plan_id,
+            'months': months,
+            'invoice-option': 'NoInvoice',
+        }
+        return self._api_request('POST', '/codeguard/add', data=data)
+
+    def codeguard_renew(self, order_id, months, exp_date):
+        """Renew CodeGuard subscription."""
+        data = {
+            'order-id': order_id,
+            'months': months,
+            'exp-date': exp_date,
+            'invoice-option': 'NoInvoice',
+        }
+        return self._api_request('POST', '/codeguard/renew', data=data)
+
+    def codeguard_get_details(self, order_id):
+        """Get CodeGuard order details."""
+        params = {'order-id': order_id}
+        return self._api_request('GET', '/codeguard/details', params)
+
+    # ===================
+    # Domain Forwarding API Methods
+    # ===================
+
+    def domain_forwarding_setup(self, order_id, destination_url, url_masking=False,
+                                 header_tags=None, noframes_content=None):
+        """
+        Setup domain forwarding (URL redirect).
+
+        :param order_id: Domain order ID
+        :param destination_url: URL to forward to
+        :param url_masking: Whether to mask the destination URL
+        :param header_tags: Optional header tags for masked forwarding
+        :param noframes_content: Content for browsers without frames support
+        :return: Response
+        """
+        data = {
+            'order-id': order_id,
+            'destination-url': destination_url,
+            'url-masking': str(url_masking).lower(),
+        }
+        if header_tags:
+            data['header-tags'] = header_tags
+        if noframes_content:
+            data['noframes-content'] = noframes_content
+        return self._api_request('POST', '/domains/forward/add', data=data)
+
+    def domain_forwarding_delete(self, order_id):
+        """Delete domain forwarding."""
+        data = {'order-id': order_id}
+        return self._api_request('POST', '/domains/forward/delete', data=data)
+
+    def domain_forwarding_get(self, order_id):
+        """Get domain forwarding details."""
+        params = {'order-id': order_id}
+        return self._api_request('GET', '/domains/forward/details', params)
+
+    # ===================
+    # WHOIS/Contact Modification API
+    # ===================
+
+    def domain_modify_contacts(self, order_id, reg_contact_id=None, admin_contact_id=None,
+                                tech_contact_id=None, billing_contact_id=None):
+        """
+        Modify domain contacts.
+
+        :param order_id: Domain order ID
+        :param reg_contact_id: New registrant contact ID
+        :param admin_contact_id: New admin contact ID
+        :param tech_contact_id: New tech contact ID
+        :param billing_contact_id: New billing contact ID
+        :return: Response
+        """
+        data = {'order-id': order_id}
+        if reg_contact_id:
+            data['reg-contact-id'] = reg_contact_id
+        if admin_contact_id:
+            data['admin-contact-id'] = admin_contact_id
+        if tech_contact_id:
+            data['tech-contact-id'] = tech_contact_id
+        if billing_contact_id:
+            data['billing-contact-id'] = billing_contact_id
+        return self._api_request('POST', '/domains/modify-contact', data=data)
+
+    def domain_resend_verification(self, order_id):
+        """Resend registrant verification email."""
+        data = {'order-id': order_id}
+        return self._api_request('POST', '/domains/resend-verification', data=data)
+
+    # ===================
+    # Child Nameserver API Methods
+    # ===================
+
+    def childns_add(self, order_id, hostname, ip_addresses):
+        """
+        Add a child nameserver (glue record).
+
+        :param order_id: Domain order ID
+        :param hostname: Nameserver hostname (e.g., ns1.example.com)
+        :param ip_addresses: List of IP addresses
+        :return: Response
+        """
+        data = {
+            'order-id': order_id,
+            'cns': hostname,
+        }
+        for i, ip in enumerate(ip_addresses):
+            data[f'ip{i+1}'] = ip
+        return self._api_request('POST', '/domains/add-cns', data=data)
+
+    def childns_modify(self, order_id, hostname, old_ip, new_ip):
+        """Modify a child nameserver IP."""
+        data = {
+            'order-id': order_id,
+            'cns': hostname,
+            'old-ip': old_ip,
+            'new-ip': new_ip,
+        }
+        return self._api_request('POST', '/domains/modify-cns-ip', data=data)
+
+    def childns_delete(self, order_id, hostname, ip):
+        """Delete a child nameserver IP."""
+        data = {
+            'order-id': order_id,
+            'cns': hostname,
+            'ip': ip,
+        }
+        return self._api_request('POST', '/domains/delete-cns-ip', data=data)
+
+    def childns_get(self, order_id):
+        """Get child nameservers for a domain."""
+        params = {'order-id': order_id}
+        return self._api_request('GET', '/domains/cns', params)
+
+    # ===================
+    # Control Panel SSO Methods
+    # ===================
+
+    def hosting_get_cpanel_url(self, order_id):
+        """
+        Get single sign-on URL for hosting cPanel.
+
+        :param order_id: Hosting order ID
+        :return: SSO URL for cPanel access
+        """
+        params = {'order-id': order_id}
+        return self._api_request('GET', '/hosting/linux/cpanel-url', params)
+
+    def hosting_get_webmail_url(self, order_id):
+        """
+        Get single sign-on URL for webmail.
+
+        :param order_id: Hosting order ID
+        :return: SSO URL for webmail access
+        """
+        params = {'order-id': order_id}
+        return self._api_request('GET', '/hosting/linux/webmail-url', params)
+
+    def vps_get_panel_url(self, order_id):
+        """
+        Get single sign-on URL for VPS control panel.
+
+        :param order_id: VPS order ID
+        :return: SSO URL for VPS panel access
+        """
+        params = {'order-id': order_id}
+        return self._api_request('GET', '/vps/linux/panel-url', params)
+
+    def email_get_control_panel_url(self, order_id):
+        """
+        Get single sign-on URL for email control panel.
+
+        :param order_id: Email hosting order ID
+        :return: SSO URL for email admin panel
+        """
+        params = {'order-id': order_id}
+        return self._api_request('GET', '/mail/control-panel-url', params)
+
+    # ===================
+    # Website Builder API Methods
+    # ===================
+
+    def sitebuilder_get_plans(self):
+        """Get available website builder plans."""
+        return self._api_request('GET', '/sitebuilder/plans')
+
+    def sitebuilder_order(self, domain_name, customer_id, plan_id, months):
+        """
+        Order website builder.
+
+        :param domain_name: Domain name for the site
+        :param customer_id: ResellerClub customer ID
+        :param plan_id: Site builder plan ID
+        :param months: Number of months
+        :return: Order response
+        """
+        data = {
+            'domain-name': domain_name,
+            'customer-id': customer_id,
+            'plan-id': plan_id,
+            'months': months,
+            'invoice-option': 'NoInvoice',
+        }
+        return self._api_request('POST', '/sitebuilder/add', data=data)
+
+    def sitebuilder_renew(self, order_id, months, exp_date):
+        """Renew website builder subscription."""
+        data = {
+            'order-id': order_id,
+            'months': months,
+            'exp-date': exp_date,
+            'invoice-option': 'NoInvoice',
+        }
+        return self._api_request('POST', '/sitebuilder/renew', data=data)
+
+    def sitebuilder_get_details(self, order_id):
+        """Get website builder order details."""
+        params = {'order-id': order_id}
+        return self._api_request('GET', '/sitebuilder/details', params)
+
 
 class ResellerClubAPILog(models.Model):
     """Model to store API call logs for debugging and audit."""
